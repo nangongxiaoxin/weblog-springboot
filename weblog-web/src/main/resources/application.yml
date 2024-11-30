@@ -1,0 +1,16 @@
+# 应用服务 WEB 访问端口
+server:
+  port: 8888
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    #设置后台返回参数，若字段为null，则不返回
+    default-property-inclusion: non_null
+    #设置日期字段格式
+    date-format: yyyy-MM-dd HH:mm:ss
+
+# 日志
+logging:
+  config: classpath:logback-weblog.xml
