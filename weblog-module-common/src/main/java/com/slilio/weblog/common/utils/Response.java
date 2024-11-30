@@ -1,5 +1,8 @@
 package com.slilio.weblog.common.utils;
 
+import com.slilio.weblog.common.enums.ResponseCodeEnum;
+import com.slilio.weblog.common.exception.BaseExceptionInterface;
+import com.slilio.weblog.common.exception.BizException;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -41,6 +44,22 @@ public class Response<T> implements Serializable {
         response.setSuccess(false);
         response.setErrorCode(errorCode);
         response.setErrorCode(errorMessage);
+        return response;
+    }
+
+    public static <T> Response<T> fail(BizException bizException){
+        Response<T> response = new Response<>();
+        response.setSuccess(false);
+        response.setErrorCode(bizException.getErrCode());
+        response.setMessage(bizException.getErrMessage());
+        return response;
+    }
+
+    public static <T> Response<T> fail(BaseExceptionInterface baseExceptionInterface) {
+        Response<T> response = new Response<>();
+        response.setSuccess(false);
+        response.setErrorCode(baseExceptionInterface.getErrorCode());
+        response.setMessage(baseExceptionInterface.getErrorMessage());
         return response;
     }
 }
