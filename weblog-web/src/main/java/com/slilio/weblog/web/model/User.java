@@ -1,10 +1,15 @@
 package com.slilio.weblog.web.model;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
+@ApiModel(value = "用户实体类")
 public class User {
     //用户名
     @NotNull(message = "用户名不能为空") //注解 用户名不能为空
@@ -24,4 +29,11 @@ public class User {
     @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式不正确")
     private String email;
+
+    // 创建时间
+    private LocalDateTime createTime;
+    // 更新日期
+    private LocalDate updateDate;
+    // 时间
+    private LocalTime time;
 }

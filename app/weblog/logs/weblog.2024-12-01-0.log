@@ -1,0 +1,12 @@
+[TraceId: ] 2024-12-01 18:26:10.554 [main] INFO  com.slilio.weblog.web.WeblogWebApplication - Starting WeblogWebApplication using Java 1.8.0_431 on DESKTOP-23HF00P with PID 25064 (F:\GitHub\Java-github\weblog\weblog-springboot\weblog-web\target\classes started by 北行 in F:\GitHub\Java-github\weblog\weblog-springboot)
+[TraceId: ] 2024-12-01 18:26:10.556 [main] INFO  com.slilio.weblog.web.WeblogWebApplication - The following profiles are active: prod
+[TraceId: ] 2024-12-01 18:26:11.118 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8888 (http)
+[TraceId: ] 2024-12-01 18:26:11.127 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+[TraceId: ] 2024-12-01 18:26:11.127 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.56]
+[TraceId: ] 2024-12-01 18:26:11.174 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+[TraceId: ] 2024-12-01 18:26:11.174 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 589 ms
+[TraceId: ] 2024-12-01 18:26:11.385 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8888 (http) with context path ''
+[TraceId: ] 2024-12-01 18:26:11.393 [main] INFO  com.slilio.weblog.web.WeblogWebApplication - Started WeblogWebApplication in 1.119 seconds (JVM running for 1.718)
+[TraceId: ] 2024-12-01 18:26:17.309 [http-nio-8888-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+[TraceId: ] 2024-12-01 18:26:17.310 [http-nio-8888-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+[TraceId: ] 2024-12-01 18:26:17.311 [http-nio-8888-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
