@@ -45,6 +45,8 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <jackson.version>2.15.2</jackson.version>
         <knife4j.version>4.3.0</knife4j.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <p6spy.version>3.9.1</p6spy.version>
     </properties>
 
     <!--统一依赖管理-->
@@ -87,6 +89,22 @@
                 <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+
+
+
+
         </dependencies>
     </dependencyManagement>
 
@@ -111,11 +129,11 @@
     </build>
 
     <!--阿里云Maven仓库源-->
-    <repositories>
-        <repository>
-            <id>aliyunmaven</id>
-            <name>aliyun</name>
-            <url>https://maven.aliyun.com/repository/public</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>aliyunmaven</id>-->
+<!--            <name>aliyun</name>-->
+<!--            <url>https://maven.aliyun.com/repository/public</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 </project>
