@@ -1,4 +1,4 @@
-package com.slilio.weblog.common.config;
+package com.slilio.weblog.jwt.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
