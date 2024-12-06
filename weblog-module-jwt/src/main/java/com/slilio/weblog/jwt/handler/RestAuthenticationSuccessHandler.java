@@ -22,6 +22,15 @@ public class RestAuthenticationSuccessHandler implements AuthenticationSuccessHa
     @Autowired
     private JwtTokenHelper jwtTokenHelper;
 
+    /**
+     * 处理身份验证成功后的逻辑
+     * @param request the request which caused the successful authentication
+     * @param response the response
+     * @param authentication the <tt>Authentication</tt> object which was created during
+     * the authentication process.
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         //从authentication对象中获取用户的UserDetails实例，这里是获取用户名

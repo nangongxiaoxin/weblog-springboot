@@ -17,6 +17,15 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+    /**
+     * 认证失败处理器
+     * @param request the request during which the authentication attempt occurred.
+     * @param response the response.
+     * @param exception the exception which was thrown to reject the authentication
+     * request.
+     * @throws IOException
+     */
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         log.warn("AuthenticationException: ",exception);
