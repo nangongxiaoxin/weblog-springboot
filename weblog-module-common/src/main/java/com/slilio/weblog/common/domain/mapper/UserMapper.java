@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.slilio.weblog.common.domain.dos.UserDO;
 
+/**
+ * 用户信息查询
+ */
 public interface UserMapper extends BaseMapper<UserDO> {
     default UserDO findByUsername(String username){
         LambdaQueryWrapper<UserDO> wrapper = new LambdaQueryWrapper<>();
+        //构建sql查询
         wrapper.eq(UserDO::getUsername,username);
         return selectOne(wrapper);
     }

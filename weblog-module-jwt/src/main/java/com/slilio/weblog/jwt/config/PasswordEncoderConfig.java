@@ -16,6 +16,6 @@ public class PasswordEncoderConfig {
 
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        System.out.println(encoder.encode("slilio"));
+        System.out.println(encoder.encode("admin"));
     }
 }

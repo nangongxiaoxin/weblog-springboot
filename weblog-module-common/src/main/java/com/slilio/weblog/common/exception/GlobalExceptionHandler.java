@@ -3,6 +3,7 @@ package com.slilio.weblog.common.exception;
 import com.slilio.weblog.common.enums.ResponseCodeEnum;
 import com.slilio.weblog.common.utils.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,6 +45,12 @@ public class GlobalExceptionHandler {
         return Response.fail(ResponseCodeEnum.SYSTEM_ERROR);
     }
 
+    /**
+     * DO校验异常
+     * @param request
+     * @param e
+     * @return
+     */
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseBody
     public Response<Object> handleMethodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException e) {
@@ -71,6 +78,18 @@ public class GlobalExceptionHandler {
 
         log.warn("{} request error,errorCode: {}, errorMessage: {}", request.getRequestURL(), errorCode, errorMessage);
         return Response.fail(errorCode, errorMessage);
+    }
+
+    /**
+     * 鉴权异常
+     * @param e
+     * @throws AccessDeniedException
+     */
+    @ExceptionHandler({ AccessDeniedException.class })
+    public void throwAccessDeniedException(AccessDeniedException e) throws AccessDeniedException {
+        // 捕获到鉴权失败异常，主动抛出，交给 RestAccessDeniedHandler 去处理
+        log.info("============= 捕获到 AccessDeniedException");
+        throw e;
     }
 }
 
