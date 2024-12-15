@@ -50,6 +50,10 @@ public class JacksonConfig {
 
         //凡是设置为null的字段，返参中均不返回，根据项目约定是否开启
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        // 忽略未知属性
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         return objectMapper;
     }
 }

@@ -20,7 +20,11 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
     //页面未登录 强行访问提示 即无权限
     UNAUTHORIZED("20002", "无访问权限，请先登录"),
     //受限角色提示 写受限
-    FORBIDDEN("20004","演示账号仅供支持查询操作");
+    FORBIDDEN("20004", "演示账号仅供支持查询操作"),
+    //文章分类
+    CATEGORY_NAME_IS_EXISTED("20005", "该分类已存在，请勿重复添加！"),
+    //用户不存在
+    USERNAME_NOT_FOUNT("20003", "该用户不存在");
 
     //异常码
     private String errorCode;
