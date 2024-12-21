@@ -2,6 +2,7 @@ package com.slilio.weblog.admin.controller;
 
 import com.slilio.weblog.admin.model.FindCategoryPageListReqVO;
 import com.slilio.weblog.admin.model.vo.category.AddCategoryReqVO;
+import com.slilio.weblog.admin.model.vo.category.DeleteCategoryReqVO;
 import com.slilio.weblog.admin.service.AdminCategoryService;
 import com.slilio.weblog.common.aspect.ApiOperationLog;
 import com.slilio.weblog.common.utils.PageResponse;
@@ -46,5 +47,29 @@ public class AdminCategoryController {
     public PageResponse findCategoryList(@RequestBody @Validated FindCategoryPageListReqVO findCategoryPageListReqVO) {
         return adminCategoryService.findCategoryList(findCategoryPageListReqVO);
     }
+
+    /**
+     * 删除分类
+     * @param deleteCategoryReqVO
+     * @return
+     */
+    @PostMapping("/category/delete")
+    @ApiOperation(value = "删除分类")
+    @ApiOperationLog(description = "删除分类")
+    public Response deleteCategory(@RequestBody @Validated DeleteCategoryReqVO deleteCategoryReqVO){
+        return adminCategoryService.deleteCategory(deleteCategoryReqVO);
+    }
+
+    /**
+     * 分类 Select 下拉列表数据获取
+     * @return
+     */
+    @PostMapping("/category/select/list")
+    @ApiOperation(value = "分类 Select 下拉列表数据获取")
+    @ApiOperationLog(description = "分类 Select 下拉列表数据获取")
+    public Response findCategorySelectList(){
+       return adminCategoryService.findCategorySelectList();
+    }
+
 
 }
