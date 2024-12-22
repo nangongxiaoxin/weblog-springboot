@@ -1,4 +1,4 @@
-package com.slilio.weblog.admin.model;
+package com.slilio.weblog.admin.model.vo.category;
 
 import com.slilio.weblog.common.model.BasePageQuery;
 import io.swagger.annotations.ApiModel;

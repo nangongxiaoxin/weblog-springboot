@@ -1,6 +1,6 @@
 package com.slilio.weblog.admin.service;
 
-import com.slilio.weblog.admin.model.FindCategoryPageListReqVO;
+import com.slilio.weblog.admin.model.vo.category.FindCategoryPageListReqVO;
 import com.slilio.weblog.admin.model.vo.category.AddCategoryReqVO;
 import com.slilio.weblog.admin.model.vo.category.DeleteCategoryReqVO;
 import com.slilio.weblog.common.utils.PageResponse;
@@ -19,7 +19,7 @@ public interface AdminCategoryService {
      * @param findCategoryPageListReqVO
      * @return
      */
-    PageResponse findCategoryList(FindCategoryPageListReqVO findCategoryPageListReqVO);
+    PageResponse findCategoryPageList(FindCategoryPageListReqVO findCategoryPageListReqVO);
 
     /**
      * 删除分类

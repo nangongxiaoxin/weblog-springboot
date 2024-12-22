@@ -1,0 +1,85 @@
+package com.slilio.weblog.admin.service.impl;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.slilio.weblog.admin.model.vo.tag.AddTagReqVO;
+import com.slilio.weblog.admin.model.vo.tag.FindTagPageListReqVO;
+import com.slilio.weblog.admin.model.vo.tag.FindTagPageListRspVO;
+import com.slilio.weblog.admin.service.AdminTagService;
+import com.slilio.weblog.common.domain.dos.TagDO;
+import com.slilio.weblog.common.domain.mapper.TagMapper;
+import com.slilio.weblog.common.utils.PageResponse;
+import com.slilio.weblog.common.utils.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@Slf4j
+public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implements AdminTagService {
+    @Autowired
+    private TagMapper tagMapper;
+
+
+    /**
+     * 添加标签集合
+     * @param addTagReqVO
+     * @return
+     */
+    @Override
+    public Response addTag(AddTagReqVO addTagReqVO) {
+        //vo转换为do
+        List<TagDO> tagDOS = addTagReqVO.getTags().stream()
+                .map(tagName -> TagDO
+                        .builder()
+                        .name(tagName.trim())
+                        .createTime(LocalDateTime.now())
+                        .updateTime(LocalDateTime.now())
+                        .build())
+                .collect(Collectors.toList());
+        //批量插入
+        try {
+            saveBatch(tagDOS);
+        } catch (Exception e) {
+            log.warn("该标签已存在",e);
+        }
+        return Response.success();
+    }
+
+    /**
+     * 标签分页数据获取
+     * @param findTagPageListReqVO
+     * @return
+     */
+    @Override
+    public PageResponse findTagList(FindTagPageListReqVO findTagPageListReqVO) {
+        //分页参数，条件参数
+        Long current = findTagPageListReqVO.getCurrent();
+        Long size = findTagPageListReqVO.getSize();
+        String name = findTagPageListReqVO.getName();
+        LocalDate startDate = findTagPageListReqVO.getStartDate();
+        LocalDate endDate = findTagPageListReqVO.getEndDate();
+        //分页查询
+        Page<TagDO> page = tagMapper.selectPageList(current, size, name, startDate, endDate);
+        List<TagDO> records = page.getRecords();
+        //vo转do
+        List<FindTagPageListRspVO> vos = null;
+        if (!CollectionUtils.isEmpty(records)) {
+            vos = records.stream().map(
+                    tagDO -> FindTagPageListRspVO.builder()
+                            .id(tagDO.getId())
+                            .name(tagDO.getName())
+                            .createTime(tagDO.getCreateTime())
+                            .build()
+            ).collect(Collectors.toList());
+        }
+        return PageResponse.success(page,vos);
+    }
+}

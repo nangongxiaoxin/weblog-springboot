@@ -1,6 +1,6 @@
 package com.slilio.weblog.admin.controller;
 
-import com.slilio.weblog.admin.model.FindCategoryPageListReqVO;
+import com.slilio.weblog.admin.model.vo.category.FindCategoryPageListReqVO;
 import com.slilio.weblog.admin.model.vo.category.AddCategoryReqVO;
 import com.slilio.weblog.admin.model.vo.category.DeleteCategoryReqVO;
 import com.slilio.weblog.admin.service.AdminCategoryService;
@@ -38,14 +38,14 @@ public class AdminCategoryController {
 
     /**
      * 分类分页数据获取
-     * @param findCategoryPageListReqVO
+     * @param findCategoryPageList
      * @return
      */
     @PostMapping("/category/list")
     @ApiOperation(value = "分类分页数据获取")
     @ApiOperationLog(description = "分类分页数据获取")
-    public PageResponse findCategoryList(@RequestBody @Validated FindCategoryPageListReqVO findCategoryPageListReqVO) {
-        return adminCategoryService.findCategoryList(findCategoryPageListReqVO);
+    public PageResponse findCategoryPageList(@RequestBody @Validated FindCategoryPageListReqVO findCategoryPageListReqVO) {
+        return adminCategoryService.findCategoryPageList(findCategoryPageListReqVO);
     }
 
     /**

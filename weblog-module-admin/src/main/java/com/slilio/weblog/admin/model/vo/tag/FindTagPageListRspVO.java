@@ -1,4 +1,4 @@
-package com.slilio.weblog.admin.model;
+package com.slilio.weblog.admin.model.vo.tag;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FindCategoryPageListRspVO {
+public class FindTagPageListRspVO {
     /**
-     * 分类 ID
+     * 标签 ID
      */
     private Long id;
 
     /**
-     * 分类名称
+     * 标签名称
      */
     private String name;
 
