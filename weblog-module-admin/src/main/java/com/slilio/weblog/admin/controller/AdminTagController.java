@@ -2,7 +2,9 @@ package com.slilio.weblog.admin.controller;
 
 import com.slilio.weblog.admin.model.vo.category.FindCategoryPageListReqVO;
 import com.slilio.weblog.admin.model.vo.tag.AddTagReqVO;
+import com.slilio.weblog.admin.model.vo.tag.DeleteTagReqVO;
 import com.slilio.weblog.admin.model.vo.tag.FindTagPageListReqVO;
+import com.slilio.weblog.admin.model.vo.tag.SearchTagReqVO;
 import com.slilio.weblog.admin.service.AdminTagService;
 import com.slilio.weblog.common.aspect.ApiOperationLog;
 import com.slilio.weblog.common.utils.PageResponse;
@@ -52,29 +54,29 @@ public class AdminTagController {
     public PageResponse findTagPageList(@RequestBody @Validated FindTagPageListReqVO findTagPageListReqVO) {
         return adminTagService.findTagList(findTagPageListReqVO);
     }
-//
-//    /**
-//     * 删除分类
-//     * @param deleteCategoryReqVO
-//     * @return
-//     */
-//    @PostMapping("/category/delete")
-//    @ApiOperation(value = "删除分类")
-//    @ApiOperationLog(description = "删除分类")
-//    public Response deleteCategory(@RequestBody @Validated DeleteCategoryReqVO deleteCategoryReqVO){
-//        return adminCategoryService.deleteCategory(deleteCategoryReqVO);
-//    }
-//
-//    /**
-//     * 分类 Select 下拉列表数据获取
-//     * @return
-//     */
-//    @PostMapping("/category/select/list")
-//    @ApiOperation(value = "分类 Select 下拉列表数据获取")
-//    @ApiOperationLog(description = "分类 Select 下拉列表数据获取")
-//    public Response findCategorySelectList(){
-//       return adminCategoryService.findCategorySelectList();
-//    }
+
+    /**
+     * 删除标签
+     * @param deleteTag
+     * @return
+     */
+    @PostMapping("/tag/delete")
+    @ApiOperation(value = "删除标签")
+    @ApiOperationLog(description = "删除标签")
+    public Response deleteTag(@RequestBody @Validated DeleteTagReqVO deleteTagReqVO){
+        return adminTagService.deleteTag(deleteTagReqVO);
+    }
+
+    /**
+     * 标签模糊查询
+     * @return
+     */
+    @PostMapping("/tag/search")
+    @ApiOperation(value = "标签模糊查询")
+    @ApiOperationLog(description = "标签模糊查询")
+    public Response searchTag(@RequestBody @Validated SearchTagReqVO searchTagReqVO){
+       return adminTagService.searchTag(searchTagReqVO);
+    }
 
 
 }

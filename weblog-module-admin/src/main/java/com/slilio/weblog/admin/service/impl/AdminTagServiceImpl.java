@@ -2,12 +2,12 @@ package com.slilio.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.slilio.weblog.admin.model.vo.tag.AddTagReqVO;
-import com.slilio.weblog.admin.model.vo.tag.FindTagPageListReqVO;
-import com.slilio.weblog.admin.model.vo.tag.FindTagPageListRspVO;
+import com.slilio.weblog.admin.model.vo.tag.*;
 import com.slilio.weblog.admin.service.AdminTagService;
 import com.slilio.weblog.common.domain.dos.TagDO;
 import com.slilio.weblog.common.domain.mapper.TagMapper;
+import com.slilio.weblog.common.enums.ResponseCodeEnum;
+import com.slilio.weblog.common.model.vo.SelectRspVO;
 import com.slilio.weblog.common.utils.PageResponse;
 import com.slilio.weblog.common.utils.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -81,5 +81,38 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
             ).collect(Collectors.toList());
         }
         return PageResponse.success(page,vos);
+    }
+
+    /**
+     * 删除标签
+     * @param deleteTagReqVO
+     * @return
+     */
+    @Override
+    public Response deleteTag(DeleteTagReqVO deleteTagReqVO) {
+        //标签ID
+        Long tagId = deleteTagReqVO.getId();
+        //根据标签ID删除语句
+        int count = tagMapper.deleteById(tagId);
+        return count == 1 ? Response.success():Response.fail(ResponseCodeEnum.TAG_NOT_EXISTED);
+    }
+
+    @Override
+    public Response searchTag(SearchTagReqVO searchTagReqVO) {
+        String key = searchTagReqVO.getKey();
+
+        //执行模糊查询
+        List<TagDO> tagDOS = tagMapper.selectByKey(key);
+        //do转vo
+        List<SelectRspVO> vos = null;
+        if(!CollectionUtils.isEmpty(tagDOS)){
+            vos = tagDOS.stream().map(
+                    tagDO -> SelectRspVO.builder()
+                            .label(tagDO.getName())
+                            .value(tagDO.getId())
+                            .build()
+            ).collect(Collectors.toList());
+        }
+        return Response.success(vos);
     }
 }

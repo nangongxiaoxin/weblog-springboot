@@ -24,7 +24,11 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
     //文章分类
     CATEGORY_NAME_IS_EXISTED("20005", "该分类已存在，请勿重复添加！"),
     //用户不存在
-    USERNAME_NOT_FOUNT("20003", "该用户不存在");
+    USERNAME_NOT_FOUNT("20003", "该用户不存在"),
+    //请勿添加重复的标签
+    TAG_CANT_DUPLICATE("20006","请勿添加表中已经存在的标签"),
+    //标签不存在
+    TAG_NOT_EXISTED("20007", "该标签不存在");
 
     //异常码
     private String errorCode;
