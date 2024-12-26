@@ -27,6 +27,8 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
     USERNAME_NOT_FOUNT("20003", "该用户不存在"),
     //请勿添加重复的标签
     TAG_CANT_DUPLICATE("20006","请勿添加表中已经存在的标签"),
+    //文件上传异常
+    FILE_UPLOAD_FAILED("20008", "文件上传失败！"),
     //标签不存在
     TAG_NOT_EXISTED("20007", "该标签不存在");
 
