@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-<!--    <groupId>com.slilio</groupId>-->
+    <!-- <groupId>com.slilio</groupId> -->
     <artifactId>weblog-module-admin</artifactId>
     <name>weblog-module-admin</name>
     <description>weblog-module-admin 管理模块</description>
@@ -44,13 +44,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-<!--        入参校验-->
+        <!-- 入参校验-->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
-<!--        @Length 注解是 hibernate 中的一个注解-->
+        <!-- @Length 注解是 hibernate 中的一个注解-->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -60,6 +60,10 @@
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
         </dependency>
-
+        <!-- mapstruct属性处理 -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
     </dependencies>
 </project>
