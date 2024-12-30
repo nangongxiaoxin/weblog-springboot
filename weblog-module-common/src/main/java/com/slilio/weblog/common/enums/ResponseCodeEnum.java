@@ -32,7 +32,9 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
   // 标签不存在
   TAG_NOT_EXISTED("20007", "该标签不存在"),
   // 提交的分类不存在
-  CATEGORY_NOT_EXISTED("20009", "提交的分类不存在！");
+  CATEGORY_NOT_EXISTED("20009", "提交的分类不存在！"),
+  // 文章不存在
+  ARTICLE_NOT_FOUND("20010", "该文章不存在！");
 
   // 异常码
   private String errorCode;
