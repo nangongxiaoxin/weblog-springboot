@@ -5,15 +5,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.slilio.weblog.admin.model.vo.tag.*;
 import com.slilio.weblog.admin.service.AdminTagService;
+import com.slilio.weblog.common.domain.dos.ArticleTagRelDO;
 import com.slilio.weblog.common.domain.dos.TagDO;
+import com.slilio.weblog.common.domain.mapper.ArticleTagRelMapper;
 import com.slilio.weblog.common.domain.mapper.TagMapper;
 import com.slilio.weblog.common.enums.ResponseCodeEnum;
+import com.slilio.weblog.common.exception.BizException;
 import com.slilio.weblog.common.model.vo.SelectRspVO;
 import com.slilio.weblog.common.utils.PageResponse;
 import com.slilio.weblog.common.utils.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 @Slf4j
 public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implements AdminTagService {
   @Autowired private TagMapper tagMapper;
+  @Autowired private ArticleTagRelMapper articleTagRelMapper;
 
   /**
    * 添加标签集合
@@ -97,6 +102,15 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
   public Response deleteTag(DeleteTagReqVO deleteTagReqVO) {
     // 标签ID
     Long tagId = deleteTagReqVO.getId();
+
+    // 校验该标签下是否有关联的文章，若有，则不允许删除，提示用户需要先删除标签下的文章
+    ArticleTagRelDO articleTagRelDO = articleTagRelMapper.selectOneByTagId(tagId);
+
+    if (Objects.nonNull(articleTagRelDO)) {
+      log.warn("==> 此标签下包含文章，无法删除，tagId: {}", tagId);
+      throw new BizException(ResponseCodeEnum.TAG_CAN_NOT_DELETE);
+    }
+
     // 根据标签ID删除语句
     int count = tagMapper.deleteById(tagId);
     return count == 1 ? Response.success() : Response.fail(ResponseCodeEnum.TAG_NOT_EXISTED);

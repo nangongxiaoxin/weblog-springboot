@@ -2,14 +2,20 @@ package com.slilio.weblog.jwt.filter;
 
 
 import com.slilio.weblog.jwt.utils.JwtTokenHelper;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import java.io.IOException;
+import java.util.Objects;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.expression.ExpressionException;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,13 +24,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Objects;
 
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
@@ -65,7 +64,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                         //抛出异常，统一让AuthenticationEntryPoint处理响应参数
                         authenticationEntryPoint.commence(request, response, new AuthenticationServiceException("Token 不可用"));
                         return;
-                    } catch (ExpressionException e) {
+                    } catch (ExpiredJwtException e) {
                         authenticationEntryPoint.commence(request, response, new AuthenticationServiceException("Token 已失效"));
                         return;
                     }
