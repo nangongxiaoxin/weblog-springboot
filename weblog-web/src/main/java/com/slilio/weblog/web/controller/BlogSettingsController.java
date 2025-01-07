@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class BlogSettingsController {
   @Autowired private BlogSettingsService blogSettingsService;
 
+  /**
+   * 获取博客信息
+   *
+   * @return
+   */
   @PostMapping("/detail")
   @ApiOperation(value = "获取博客信息")
   @ApiOperationLog(description = "获取博客信息")
