@@ -4,6 +4,7 @@ import com.slilio.weblog.common.domain.dos.ArticleDO;
 import com.slilio.weblog.web.model.vo.archive.FindArchiveArticleRspVO;
 import com.slilio.weblog.web.model.vo.article.FindIndexArticlePageListRspVO;
 import com.slilio.weblog.web.model.vo.category.FindCategoryArticlePageListRspVO;
+import com.slilio.weblog.web.model.vo.tag.FindTagArticlePageListRspVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -37,6 +38,17 @@ public interface ArticleConvert {
       target = "createMonth",
       expression = "java(java.time.YearMonth.from(bean.getCreateTime()))")
   FindArchiveArticleRspVO convertDO2ArchiveArticleVO(ArticleDO bean);
+
+  /**
+   * ArticleDO -> FindTagArticlePageListRspVO
+   *
+   * @param bean
+   * @return
+   */
+  @Mapping(
+      target = "createDate",
+      expression = "java(java.time.LocalDate.from(bean.getCreateTime()))")
+  FindTagArticlePageListRspVO convertDO2TagArticleVO(ArticleDO bean);
 
   /**
    * 将DO转换成分类文章VO
