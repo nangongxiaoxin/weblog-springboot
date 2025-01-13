@@ -53,6 +53,7 @@
         <!--        Minio-->
         <minio.version>8.2.1</minio.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <commonmark.version>0.20.0</commonmark.version>
     </properties>
 
     <!--统一依赖管理-->
@@ -141,6 +142,12 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
+            </dependency>
+            <!-- Markdown 解析 -->
+            <dependency>
+                <groupId>org.commonmark</groupId>
+                <artifactId>commonmark</artifactId>
+                <version>${commonmark.version}</version>
             </dependency>
 
         </dependencies>
