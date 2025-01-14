@@ -2,6 +2,7 @@ package com.slilio.weblog.web.controller;
 
 import com.slilio.weblog.common.aspect.ApiOperationLog;
 import com.slilio.weblog.common.utils.Response;
+import com.slilio.weblog.web.model.vo.article.FindArticleDetailReqVO;
 import com.slilio.weblog.web.model.vo.article.FindIndexArticlePageListReqVO;
 import com.slilio.weblog.web.service.ArticleService;
 import io.swagger.annotations.Api;
@@ -31,5 +32,18 @@ public class ArticleController {
   public Response findArticlePageList(
       @RequestBody FindIndexArticlePageListReqVO findIndexArticlePageListReqVO) {
     return articleService.findArticlePageList(findIndexArticlePageListReqVO);
+  }
+
+  /**
+   * 获取文章详情
+   *
+   * @param findArticleDetailReqVO
+   * @return
+   */
+  @PostMapping("/detail")
+  @ApiOperation(value = "获取文章详情")
+  @ApiOperationLog(description = "获取文章详情")
+  public Response findArticleDetail(@RequestBody FindArticleDetailReqVO findArticleDetailReqVO) {
+    return articleService.findArticleDetail(findArticleDetailReqVO);
   }
 }
