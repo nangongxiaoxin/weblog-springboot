@@ -65,9 +65,13 @@ public class ImageNodeRenderer implements NodeRenderer {
     }
     sb.append(">");
 
+//    if (StringUtils.isNotBlank(imgTitle)) {
+//      // 图片下下方文字
+//      sb.append(String.format("<span>%s</span>", imgTitle));
+//    }
     if (StringUtils.isNotBlank(imgTitle)) {
-      // 图片下下方文字
-      sb.append(String.format("<span>%s</span>", imgTitle));
+      // 图文下方文字
+      sb.append(String.format("<span class=\"image-caption\">%s</span>", imgTitle));
     }
 
     // 设置HTML内容
