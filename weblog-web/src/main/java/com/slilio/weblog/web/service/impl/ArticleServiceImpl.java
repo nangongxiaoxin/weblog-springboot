@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.slilio.weblog.admin.event.ReadArticleEvent;
 import com.slilio.weblog.common.domain.dos.*;
 import com.slilio.weblog.common.domain.mapper.*;
 import com.slilio.weblog.common.enums.ResponseCodeEnum;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,6 +36,8 @@ public class ArticleServiceImpl implements ArticleService {
   @Autowired private TagMapper tagMapper;
   @Autowired private ArticleTagRelMapper articleTagRelMapper;
   @Autowired private ArticleContentMapper articleContentMapper;
+  //  发布文章阅读事件 发布者 生产者
+  @Autowired private ApplicationEventPublisher eventPublisher;
 
   /**
    * 获取首页文章分页数据
@@ -203,6 +207,10 @@ public class ArticleServiceImpl implements ArticleService {
               .build();
       vo.setNextArticle(nextArticleVO);
     }
+
+    // 发布文章阅读事件
+    eventPublisher.publishEvent(new ReadArticleEvent(this, articleId));
+
     return Response.success(vo);
   }
 }
