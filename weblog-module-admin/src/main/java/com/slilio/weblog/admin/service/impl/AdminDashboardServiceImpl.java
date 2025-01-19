@@ -61,7 +61,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
             .articleTotalCount(articleTotalCount)
             .categoryTotalCount(categoryTotalCount)
             .tagTotalCount(tagTotalCount)
-            .pvtTotalCount(pvTotalCount)
+            .pvTotalCount(pvTotalCount)
             .build();
 
     return Response.success(vo);

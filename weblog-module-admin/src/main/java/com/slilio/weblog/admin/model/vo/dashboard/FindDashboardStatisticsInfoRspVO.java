@@ -16,5 +16,5 @@ public class FindDashboardStatisticsInfoRspVO {
   private Long articleTotalCount; // 文章总数
   private Long categoryTotalCount; // 分类总数
   private Long tagTotalCount; // 标签总数
-  private Long pvtTotalCount; // 浏览总数
+  private Long pvTotalCount; // 浏览总数
 }
