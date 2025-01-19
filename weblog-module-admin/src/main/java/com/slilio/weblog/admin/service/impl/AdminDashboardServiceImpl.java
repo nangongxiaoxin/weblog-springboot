@@ -2,13 +2,18 @@ package com.slilio.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.slilio.weblog.admin.model.vo.dashboard.FindDashboardPVStatisticsInfoRspVO;
 import com.slilio.weblog.admin.model.vo.dashboard.FindDashboardStatisticsInfoRspVO;
 import com.slilio.weblog.admin.service.AdminDashboardService;
+import com.slilio.weblog.common.constant.Constants;
 import com.slilio.weblog.common.domain.dos.ArticleDO;
 import com.slilio.weblog.common.domain.dos.ArticlePublishCountDO;
+import com.slilio.weblog.common.domain.dos.StatisticsArticlePVDO;
 import com.slilio.weblog.common.domain.mapper.ArticleMapper;
 import com.slilio.weblog.common.domain.mapper.CategoryMapper;
+import com.slilio.weblog.common.domain.mapper.StatisticsArticlePVMapper;
 import com.slilio.weblog.common.domain.mapper.TagMapper;
 import com.slilio.weblog.common.utils.Response;
 import java.time.LocalDate;
@@ -26,6 +31,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
   @Autowired private ArticleMapper articleMapper;
   @Autowired private CategoryMapper categoryMapper;
   @Autowired private TagMapper tagMapper;
+  @Autowired private StatisticsArticlePVMapper articlePVMapper;
 
   /**
    * 获取仪表盘基础信息
@@ -61,6 +67,11 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
     return Response.success(vo);
   }
 
+  /**
+   * 获取文章发布热点统计信息
+   *
+   * @return
+   */
   @Override
   public Response findDashBoardPublishArticleStatistics() {
     // 当前日期
@@ -94,5 +105,47 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
     }
 
     return Response.success(map);
+  }
+
+  /**
+   * 获取文章最近一周 PV 访问量统计信息
+   *
+   * @return
+   */
+  @Override
+  public Response findDashboardPVStatistics() {
+    // 最近一周的PV访问量
+    List<StatisticsArticlePVDO> articlePVDOS = articlePVMapper.selectLatestWeekRecords();
+
+    Map<LocalDate, Long> pvDateCountMap = Maps.newLinkedHashMap();
+    if (!CollectionUtils.isEmpty(articlePVDOS)) {
+      // 转Map，方便后续通过日期获取PV访问量
+      pvDateCountMap =
+          articlePVDOS.stream()
+              .collect(
+                  Collectors.toMap(
+                      StatisticsArticlePVDO::getPvDate, StatisticsArticlePVDO::getPvCount));
+    }
+
+    FindDashboardPVStatisticsInfoRspVO vo = null;
+
+    // 日期集合
+    List<String> pvDates = Lists.newArrayList();
+    // pv集合
+    List<Long> pvCounts = Lists.newArrayList();
+    // 当前日期
+    LocalDate currDate = LocalDate.now();
+    // 一周前的日期
+    LocalDate tmpDate = currDate.minusWeeks(1);
+
+    // 从一周前开始循环
+    for (; tmpDate.isBefore(currDate) || tmpDate.isEqual(currDate); tmpDate = tmpDate.plusDays(1)) {
+      // 设置对应日期的pv访问量
+      pvDates.add(tmpDate.format(Constants.MONTH_DAY_FORMATTER));
+      Long pvCount = pvDateCountMap.get(tmpDate);
+      pvCounts.add(Objects.isNull(pvCount) ? 0 : pvCount);
+    }
+    vo = FindDashboardPVStatisticsInfoRspVO.builder().pvDates(pvDates).pvCounts(pvCounts).build();
+    return Response.success(vo);
   }
 }

@@ -1,8 +1,8 @@
 package com.slilio.weblog.admin.controller;
 
-import com.slilio.weblog.admin.model.vo.category.FindCategoryPageListReqVO;
 import com.slilio.weblog.admin.model.vo.category.AddCategoryReqVO;
 import com.slilio.weblog.admin.model.vo.category.DeleteCategoryReqVO;
+import com.slilio.weblog.admin.model.vo.category.FindCategoryPageListReqVO;
 import com.slilio.weblog.admin.service.AdminCategoryService;
 import com.slilio.weblog.common.aspect.ApiOperationLog;
 import com.slilio.weblog.common.utils.PageResponse;
@@ -22,57 +22,59 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Admin 分类模块")
 public class AdminCategoryController {
 
-    @Autowired
-    private AdminCategoryService adminCategoryService;
+  @Autowired private AdminCategoryService adminCategoryService;
 
-    /**
-     * 添加分类
-     * @param addCategoryReqVO
-     * @return
-     */
-    @PostMapping("/category/add")
-    @ApiOperation(value = "添加分类")
-    @ApiOperationLog(description = "添加分类")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Response addCategory(@RequestBody @Validated AddCategoryReqVO addCategoryReqVO){
-        return adminCategoryService.addCategory(addCategoryReqVO);
-    }
+  /**
+   * 添加分类
+   *
+   * @param addCategoryReqVO
+   * @return
+   */
+  @PostMapping("/category/add")
+  @ApiOperation(value = "添加分类")
+  @ApiOperationLog(description = "添加分类")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public Response addCategory(@RequestBody @Validated AddCategoryReqVO addCategoryReqVO) {
+    return adminCategoryService.addCategory(addCategoryReqVO);
+  }
 
-    /**
-     * 分类分页数据获取
-     * @param findCategoryPageList
-     * @return
-     */
-    @PostMapping("/category/list")
-    @ApiOperation(value = "分类分页数据获取")
-    @ApiOperationLog(description = "分类分页数据获取")
-    public PageResponse findCategoryPageList(@RequestBody @Validated FindCategoryPageListReqVO findCategoryPageListReqVO) {
-        return adminCategoryService.findCategoryPageList(findCategoryPageListReqVO);
-    }
+  /**
+   * 分类分页数据获取
+   *
+   * @param findCategoryPageListReqVO
+   * @return
+   */
+  @PostMapping("/category/list")
+  @ApiOperation(value = "分类分页数据获取")
+  @ApiOperationLog(description = "分类分页数据获取")
+  public PageResponse findCategoryPageList(
+      @RequestBody @Validated FindCategoryPageListReqVO findCategoryPageListReqVO) {
+    return adminCategoryService.findCategoryPageList(findCategoryPageListReqVO);
+  }
 
-    /**
-     * 删除分类
-     * @param deleteCategoryReqVO
-     * @return
-     */
-    @PostMapping("/category/delete")
-    @ApiOperation(value = "删除分类")
-    @ApiOperationLog(description = "删除分类")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Response deleteCategory(@RequestBody @Validated DeleteCategoryReqVO deleteCategoryReqVO){
-        return adminCategoryService.deleteCategory(deleteCategoryReqVO);
-    }
+  /**
+   * 删除分类
+   *
+   * @param deleteCategoryReqVO
+   * @return
+   */
+  @PostMapping("/category/delete")
+  @ApiOperation(value = "删除分类")
+  @ApiOperationLog(description = "删除分类")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public Response deleteCategory(@RequestBody @Validated DeleteCategoryReqVO deleteCategoryReqVO) {
+    return adminCategoryService.deleteCategory(deleteCategoryReqVO);
+  }
 
-    /**
-     * 分类 Select 下拉列表数据获取
-     * @return
-     */
-    @PostMapping("/category/select/list")
-    @ApiOperation(value = "分类 Select 下拉列表数据获取")
-    @ApiOperationLog(description = "分类 Select 下拉列表数据获取")
-    public Response findCategorySelectList(){
-       return adminCategoryService.findCategorySelectList();
-    }
-
-
+  /**
+   * 分类 Select 下拉列表数据获取
+   *
+   * @return
+   */
+  @PostMapping("/category/select/list")
+  @ApiOperation(value = "分类 Select 下拉列表数据获取")
+  @ApiOperationLog(description = "分类 Select 下拉列表数据获取")
+  public Response findCategorySelectList() {
+    return adminCategoryService.findCategorySelectList();
+  }
 }

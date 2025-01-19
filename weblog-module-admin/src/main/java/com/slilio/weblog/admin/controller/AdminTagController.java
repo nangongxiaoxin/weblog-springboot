@@ -55,7 +55,7 @@ public class AdminTagController {
   /**
    * 删除标签
    *
-   * @param deleteTag
+   * @param deleteTagReqVO
    * @return
    */
   @PostMapping("/tag/delete")
