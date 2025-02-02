@@ -30,14 +30,14 @@ public class LuceneHelper {
   /**
    * 创建索引
    *
-   * @param indexDir
-   * @param documents
+   * @param indexDir 索引存放的目录
+   * @param documents 文档
    */
   public void createIndex(String indexDir, List<Document> documents) {
     try {
       File dir = new File(indexDir);
       // 判断索引目录是否存在
-      if (!dir.exists()) {
+      if (dir.exists()) {
         // 删除目录里的内容
         FileUtils.cleanDirectory(dir);
       } else {
