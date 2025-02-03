@@ -20,6 +20,11 @@
             <artifactId>weblog-module-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.slilio</groupId>
+            <artifactId>weblog-module-search</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>

@@ -11,7 +11,6 @@ import com.slilio.weblog.common.domain.mapper.ArticleMapper;
 import com.slilio.weblog.search.LuceneHelper;
 import com.slilio.weblog.search.config.LuceneProperties;
 import com.slilio.weblog.search.index.ArticleIndex;
-import java.io.File;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.Document;
@@ -57,9 +56,6 @@ public class InitLuceneIndexRunner implements CommandLineRunner {
       return;
     }
 
-    // 文章索引存放目录，如 /app/weblog/lucene-index/article
-    String articleIndexDir = luceneProperties.getIndexDir() + File.separator + ArticleIndex.NAME;
-
     List<Document> documents = Lists.newArrayList();
     articleDOS.forEach(
         articleDO -> {
@@ -90,7 +86,7 @@ public class InitLuceneIndexRunner implements CommandLineRunner {
         });
 
     // 创建索引
-    luceneHelper.createIndex(articleIndexDir, documents);
+    luceneHelper.createIndex(ArticleIndex.NAME, documents);
 
     log.info("==> 结束初始化 Lucene 索引...");
   }

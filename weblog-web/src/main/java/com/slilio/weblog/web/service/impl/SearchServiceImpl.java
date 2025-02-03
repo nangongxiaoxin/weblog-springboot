@@ -48,10 +48,10 @@ public class SearchServiceImpl implements SearchService {
     String[] columns = {ArticleIndex.COLUMN_TITLE, ArticleIndex.COLUMN_SUMMARY};
 
     // 查询总记录数
-    long total = luceneHelper.searchTotal(articleIndexDir, word, columns);
+    long total = luceneHelper.searchTotal(ArticleIndex.NAME, word, columns);
 
-    // 执行搜索
-    List<Document> documents = luceneHelper.search(articleIndexDir, word, columns, current, size);
+    // 执行搜索 分页查询
+    List<Document> documents = luceneHelper.search(ArticleIndex.NAME, word, columns, current, size);
 
     // 若未查询到相关文档，只接return
     if (CollectionUtils.isEmpty(documents)) {

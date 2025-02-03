@@ -1,6 +1,7 @@
 package com.slilio.weblog.search;
 
 import com.google.common.collect.Lists;
+import com.slilio.weblog.search.config.LuceneProperties;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -9,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -22,19 +20,24 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class LuceneHelper {
+  @Autowired private LuceneProperties properties;
+
   /**
    * 创建索引
    *
-   * @param indexDir 索引存放的目录
+   * @param index 索引名称
    * @param documents 文档
    */
-  public void createIndex(String indexDir, List<Document> documents) {
+  public void createIndex(String index, List<Document> documents) {
     try {
+      String indexDir = properties.getIndexDir() + File.separator + index;
+
       File dir = new File(indexDir);
       // 判断索引目录是否存在
       if (dir.exists()) {
@@ -75,28 +78,28 @@ public class LuceneHelper {
   /**
    * 关键词搜索, 查询总数据量
    *
-   * @param indexDir 索引目录
+   * @param index 索引名称
    * @param word 查询关键词
    * @param columns 需要搜索的字段
    * @return
    */
-  public long searchTotal(String indexDir, String word, String[] columns) {
+  public long searchTotal(String index, String word, String[] columns) {
     try {
+      String indexDir = properties.getIndexDir() + File.separator + index;
       // 打开索引目录
-      Directory directory = FSDirectory.open(Paths.get(indexDir)); // 打开索引目录
-      IndexReader reader = DirectoryReader.open(directory); // 创建一个IndexReader，用于读取索引
-      IndexSearcher searcher = new IndexSearcher(reader); // 创建一个IndexSearch，用于搜索操作
+      Directory directory = FSDirectory.open(Paths.get(indexDir));
+      IndexReader reader = DirectoryReader.open(directory);
+      IndexSearcher searcher = new IndexSearcher(reader);
 
       // 中文分析器
       Analyzer analyzer = new SmartChineseAnalyzer();
       // 查询解析器
-      QueryParser parser =
-          new MultiFieldQueryParser(columns, analyzer); // 解析查询字符串。columns 参数指定了在哪些字段上执行查询
-      // 查询解析关键字
-      Query query = parser.parse(word); // 查询字符串 word 解析为 Lucene 的查询对象 Query
+      QueryParser parser = new MultiFieldQueryParser(columns, analyzer);
+      // 解析查询关键字
+      Query query = parser.parse(word);
 
       // 搜索文档
-      TopDocs totalDocs = searcher.search(query, Integer.MAX_VALUE); // 执行查询
+      TopDocs totalDocs = searcher.search(query, Integer.MAX_VALUE);
       // 返回文档数
       return totalDocs.totalHits.value;
     } catch (Exception e) {
@@ -108,36 +111,36 @@ public class LuceneHelper {
   /**
    * 关键词搜索
    *
-   * @param indexDir 索引目录
+   * @param index 索引名称
    * @param word 查询关键词
    * @param columns 被搜索的字段
    * @param current 当前页
    * @param size 每页数据量
    * @return
    */
-  public List<Document> search(
-      String indexDir, String word, String[] columns, int current, int size) {
+  public List<Document> search(String index, String word, String[] columns, int current, int size) {
     try {
-      // 打开目录
-      Directory directory = FSDirectory.open(Paths.get(indexDir)); // 打开索引目录
-      IndexReader reader = DirectoryReader.open(directory); // 创建一个IndexReader，用于读取索引
-      IndexSearcher searcher = new IndexSearcher(reader); // 创建一个IndexSearch，用于搜索操作
+      String indexDir = properties.getIndexDir() + File.separator + index;
+
+      // 打开索引目录
+      Directory directory = FSDirectory.open(Paths.get(indexDir));
+      IndexReader reader = DirectoryReader.open(directory);
+      IndexSearcher searcher = new IndexSearcher(reader);
 
       // 中文分析器
       Analyzer analyzer = new SmartChineseAnalyzer();
       // 查询解析器
-      QueryParser parser =
-          new MultiFieldQueryParser(columns, analyzer); // 解析查询字符串。columns 参数指定了在哪些字段上执行查询
+      QueryParser parser = new MultiFieldQueryParser(columns, analyzer);
       // 解析查询关键字
-      Query query = parser.parse(word); // 查询字符串 word 解析为 Lucene 的查询对象 Query
+      Query query = parser.parse(word);
 
-      // 执行搜索 获取匹配查询的前limit条结果
+      // 执行搜索，获取匹配查询的前 limit 条结果。
       int limit = current * size;
-      TopDocs topDocs = searcher.search(query, limit); // //执行查询 搜索前limit条结果
+      TopDocs topDocs = searcher.search(query, limit); // 搜索前 limit 条结果
 
       // 匹配的文档数组
       ScoreDoc[] scoreDocs = topDocs.scoreDocs;
-      // 计算分页的起始-结束位置
+      // 计算分页的起始 - 结束位置
       int start = (current - 1) * size;
       int end = Math.min(start + size, scoreDocs.length);
 
@@ -151,10 +154,106 @@ public class LuceneHelper {
       // 释放资源
       reader.close();
       return documents;
-
     } catch (Exception e) {
-      log.error("查询Lucene错误：", e);
+      log.error("查询 Lucene 错误: ", e);
       return null;
+    }
+  }
+
+  /**
+   * 添加文档
+   *
+   * @param index 索引名称
+   * @param document 新的文档
+   * @return
+   */
+  public long addDocument(String index, Document document) {
+    try {
+      String indexDir = properties.getIndexDir() + File.separator + index;
+
+      // 打开索引存放目录
+      Directory dir = FSDirectory.open(Paths.get(indexDir));
+
+      // 配置IndexWriter
+      Analyzer analyzer = new SmartChineseAnalyzer();
+      IndexWriterConfig config = new IndexWriterConfig(analyzer);
+      IndexWriter writer = new IndexWriter(dir, config);
+
+      // 添加文档
+      long count = writer.addDocument(document);
+
+      writer.commit();
+      writer.close();
+
+      return count;
+    } catch (Exception e) {
+      log.error("添加Lucene文档失败", e);
+      return 0;
+    }
+  }
+
+  /**
+   * 删除文档
+   *
+   * @param index 索引名称
+   * @param condition 删除条件
+   * @return
+   */
+  public long deleteDocument(String index, Term condition) {
+    try {
+      String indexDir = properties.getIndexDir() + File.separator + index;
+
+      // 打开索引目录
+      Directory directory = FSDirectory.open(Paths.get(indexDir));
+
+      // 配置IndexWriter
+      IndexWriterConfig config = new IndexWriterConfig(new SmartChineseAnalyzer());
+      IndexWriter writer = new IndexWriter(directory, config);
+
+      // 删除文档
+      long count = writer.deleteDocuments(condition);
+
+      writer.commit();
+      writer.close();
+
+      return count;
+    } catch (Exception e) {
+      log.error("删除 Lucene 文档错误: ", e);
+      return 0;
+    }
+  }
+
+  /**
+   * 更新文章
+   *
+   * @param index 索引名称
+   * @param document 文档
+   * @param condition 条件
+   * @return
+   */
+  public long updateDocument(String index, Document document, Term condition) {
+    try {
+      String indexDir = properties.getIndexDir() + File.separator + index;
+
+      // 打开索引目录
+      Directory directory = FSDirectory.open(Paths.get(indexDir));
+
+      // 配置 IndexWriter
+      SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
+      IndexWriterConfig config = new IndexWriterConfig(analyzer);
+      IndexWriter writer = new IndexWriter(directory, config);
+
+      // 更新文档
+      long count = writer.updateDocument(condition, document);
+
+      // 提交更改
+      writer.commit();
+      writer.close();
+
+      return count;
+    } catch (Exception e) {
+      log.error("更新 Lucene 文档错误: ", e);
+      return 0;
     }
   }
 }
