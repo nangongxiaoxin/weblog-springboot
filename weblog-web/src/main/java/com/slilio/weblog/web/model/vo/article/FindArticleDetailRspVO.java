@@ -23,4 +23,6 @@ public class FindArticleDetailRspVO {
   private List<FindTagListRspVO> tags; // 标签集合
   private FindPreNextArticleRspVO preArticle; // 上一篇文章
   private FindPreNextArticleRspVO nextArticle; // 下一篇文章
+  private Integer totalWords; // 总字数
+  private String readTime; // 总时长
 }

@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 
 @Service
@@ -39,6 +39,7 @@ public class AdminArticleServiceImpl implements AdminArticleService {
   @Autowired private TagMapper tagMapper;
   @Autowired private ArticleTagRelMapper articleTagRelMapper;
   @Autowired private ApplicationEventPublisher eventPublisher;
+  @Autowired private TransactionTemplate transactionTemplate;
 
   /**
    * 发布文章
@@ -46,50 +47,66 @@ public class AdminArticleServiceImpl implements AdminArticleService {
    * @param publishArticleReqVO
    * @return
    */
-  @Transactional(rollbackFor = Exception.class)
+  //  @Transactional(rollbackFor = Exception.class) //声明式注解无效
   @Override
   public Response publishArticle(PublishArticleReqVO publishArticleReqVO) {
-    // vo转ArticleDO，并保存
-    ArticleDO articleDO =
-        ArticleDO.builder()
-            .title(publishArticleReqVO.getTitle())
-            .cover(publishArticleReqVO.getCover())
-            .summary(publishArticleReqVO.getSummary())
-            .createTime(LocalDateTime.now())
-            .updateTime(LocalDateTime.now())
-            .build();
-    articleMapper.insert(articleDO);
-    // 拿到上面插入记录的主键ID
-    Long articleId = articleDO.getId();
+    // 更换为编程试事务注解
+    Long rfArticleId =
+        transactionTemplate.execute(
+            status -> {
+              try {
+                // vo转ArticleDO，并保存
+                ArticleDO articleDO =
+                    ArticleDO.builder()
+                        .title(publishArticleReqVO.getTitle())
+                        .cover(publishArticleReqVO.getCover())
+                        .summary(publishArticleReqVO.getSummary())
+                        .createTime(LocalDateTime.now())
+                        .updateTime(LocalDateTime.now())
+                        .build();
+                articleMapper.insert(articleDO);
+                // 拿到上面插入记录的主键ID
+                Long articleId = articleDO.getId();
 
-    // vo转ArticleContentDO,并保存
-    ArticleContentDO articleContentDO =
-        ArticleContentDO.builder()
-            .articleId(articleId)
-            .content(publishArticleReqVO.getContent())
-            .build();
-    articleContentMapper.insert(articleContentDO);
+                // vo转ArticleContentDO,并保存
+                ArticleContentDO articleContentDO =
+                    ArticleContentDO.builder()
+                        .articleId(articleId)
+                        .content(publishArticleReqVO.getContent())
+                        .build();
+                articleContentMapper.insert(articleContentDO);
 
-    // 处理文章关联的分类
-    Long categoryId = publishArticleReqVO.getCategoryId();
+                // 处理文章关联的分类
+                Long categoryId = publishArticleReqVO.getCategoryId();
 
-    // 校验分类是否真实存在
-    CategoryDO categoryDO = categoryMapper.selectById(categoryId);
-    if (Objects.isNull(categoryDO)) {
-      log.warn("==> 分类不存在，categoryId：{}", categoryId);
-      throw new BizException(ResponseCodeEnum.CATEGORY_NOT_EXISTED);
-    }
+                // 校验分类是否真实存在
+                CategoryDO categoryDO = categoryMapper.selectById(categoryId);
+                if (Objects.isNull(categoryDO)) {
+                  log.warn("==> 分类不存在，categoryId：{}", categoryId);
+                  throw new BizException(ResponseCodeEnum.CATEGORY_NOT_EXISTED);
+                }
 
-    ArticleCategoryRelDO articleCategoryRelDO =
-        ArticleCategoryRelDO.builder().articleId(articleId).categoryId(categoryId).build();
-    articleCategoryRelMapper.insert(articleCategoryRelDO);
+                ArticleCategoryRelDO articleCategoryRelDO =
+                    ArticleCategoryRelDO.builder()
+                        .articleId(articleId)
+                        .categoryId(categoryId)
+                        .build();
+                articleCategoryRelMapper.insert(articleCategoryRelDO);
 
-    // 保存文章关联的标签集合
-    List<String> publishTags = publishArticleReqVO.getTags();
-    insertTags(articleId, publishTags);
+                // 保存文章关联的标签集合
+                List<String> publishTags = publishArticleReqVO.getTags();
+                insertTags(articleId, publishTags);
+
+                return articleId;
+              } catch (Exception e) {
+                status.setRollbackOnly();
+                log.error("发布文章失败，事务回滚：", e);
+                return null;
+              }
+            });
 
     // 发送文章发布事件
-    eventPublisher.publishEvent(new PublishArticleEvent(this, articleId));
+    eventPublisher.publishEvent(new PublishArticleEvent(this, rfArticleId));
 
     return Response.success();
   }
@@ -193,24 +210,37 @@ public class AdminArticleServiceImpl implements AdminArticleService {
    * @return
    */
   @Override
-  @Transactional(rollbackFor = Exception.class)
+  //  @Transactional(rollbackFor = Exception.class) //声明式注解无效
   public Response deleteArticle(DeleteArticleReqVO deleteArticleReqVO) {
-    Long articleId = deleteArticleReqVO.getId();
+    // 更换为编程试事务注解
+    Long rfArticleId =
+        transactionTemplate.execute(
+            status -> {
+              try {
+                Long articleId = deleteArticleReqVO.getId();
 
-    // 删除文章
-    articleMapper.deleteById(articleId);
+                // 删除文章
+                articleMapper.deleteById(articleId);
 
-    // 删除文章内容
-    articleContentMapper.deleteByArticleId(articleId);
+                // 删除文章内容
+                articleContentMapper.deleteByArticleId(articleId);
 
-    // 删除文章-分类关联记录
-    articleCategoryRelMapper.deleteByArticleId(articleId);
+                // 删除文章-分类关联记录
+                articleCategoryRelMapper.deleteByArticleId(articleId);
 
-    // 删除文章-标签关联记录
-    articleTagRelMapper.deleteByArticleId(articleId);
+                // 删除文章-标签关联记录
+                articleTagRelMapper.deleteByArticleId(articleId);
+
+                return articleId;
+              } catch (Exception e) {
+                status.setRollbackOnly();
+                log.error("删除失败，事务回滚：", e);
+                return null;
+              }
+            });
 
     // 发布文章删除事件
-    eventPublisher.publishEvent(new DeleteArticleEvent(this, articleId));
+    eventPublisher.publishEvent(new DeleteArticleEvent(this, rfArticleId));
 
     return Response.success();
   }
@@ -287,7 +317,7 @@ public class AdminArticleServiceImpl implements AdminArticleService {
     // vo转do
     FindArticleDetailRspVO vo = ArticleDetailConvert.INSTANCE.convertDO2VO(articleDO);
     vo.setContent(articleContentDO.getContent());
-    vo.setCategoryId(articleCategoryRelDO.getId());
+    vo.setCategoryId(articleCategoryRelDO.getCategoryId());
     vo.setTagIds(tagIds);
 
     return Response.success(vo);
@@ -299,64 +329,79 @@ public class AdminArticleServiceImpl implements AdminArticleService {
    * @param updateArticleReqVO
    * @return
    */
+  //  @Transactional(rollbackFor = Exception.class) //声明式注解无效
   @Override
-  @Transactional(rollbackFor = Exception.class)
   public Response updateArticle(UpdateArticleReqVO updateArticleReqVO) {
-    Long articleId = updateArticleReqVO.getId();
+    // 更换为编程试事务注解
+    Long rfArticleId =
+        transactionTemplate.execute(
+            status -> {
+              try {
+                Long articleId = updateArticleReqVO.getId();
 
-    // 1.更新文章标题
-    // vo转ArticleDO,并更新
-    ArticleDO articleDO =
-        ArticleDO.builder()
-            .id(articleId)
-            .title(updateArticleReqVO.getTitle())
-            .cover(updateArticleReqVO.getCover())
-            .summary(updateArticleReqVO.getSummary())
-            .updateTime(LocalDateTime.now())
-            .build();
-    // 执行更新
-    int count = articleMapper.updateById(articleDO);
+                // 1.更新文章标题
+                // vo转ArticleDO,并更新
+                ArticleDO articleDO =
+                    ArticleDO.builder()
+                        .id(articleId)
+                        .title(updateArticleReqVO.getTitle())
+                        .cover(updateArticleReqVO.getCover())
+                        .summary(updateArticleReqVO.getSummary())
+                        .updateTime(LocalDateTime.now())
+                        .build();
+                // 执行更新
+                int count = articleMapper.updateById(articleDO);
 
-    // 根据更新是否成功来判断是否成功
-    if (count == 0) {
-      log.warn("==> 该文章不存在, articleId: {}", articleId);
-      throw new BizException(ResponseCodeEnum.ARTICLE_NOT_FOUND);
-    }
+                // 根据更新是否成功来判断是否成功
+                if (count == 0) {
+                  log.warn("==> 该文章不存在, articleId: {}", articleId);
+                  throw new BizException(ResponseCodeEnum.ARTICLE_NOT_FOUND);
+                }
 
-    // 2.更新文章内容
-    // vo转ArticleContent,并更新
-    ArticleContentDO articleContentDO =
-        ArticleContentDO.builder()
-            .articleId(articleId)
-            .content(updateArticleReqVO.getContent())
-            .build();
-    // 执行更新
-    articleContentMapper.updateByArticleId(articleContentDO);
+                // 2.更新文章内容
+                // vo转ArticleContent,并更新
+                ArticleContentDO articleContentDO =
+                    ArticleContentDO.builder()
+                        .articleId(articleId)
+                        .content(updateArticleReqVO.getContent())
+                        .build();
+                // 执行更新
+                articleContentMapper.updateByArticleId(articleContentDO);
 
-    // 3.更新文章分类
-    Long categoryId = updateArticleReqVO.getCategoryId();
-    // 校验分类是否存在
-    CategoryDO categoryDO = categoryMapper.selectById(categoryId);
-    if (Objects.isNull(categoryDO)) {
-      log.warn("==> 分类不存在, categoryId: {}", categoryId);
-      throw new BizException(ResponseCodeEnum.CATEGORY_NOT_EXISTED);
-    }
+                // 3.更新文章分类
+                Long categoryId = updateArticleReqVO.getCategoryId();
+                // 校验分类是否存在
+                CategoryDO categoryDO = categoryMapper.selectById(categoryId);
+                if (Objects.isNull(categoryDO)) {
+                  log.warn("==> 分类不存在, categoryId: {}", categoryId);
+                  throw new BizException(ResponseCodeEnum.CATEGORY_NOT_EXISTED);
+                }
 
-    // 先删除该文章关联的分类记录，在插入新的关联关系
-    articleCategoryRelMapper.deleteByArticleId(articleId);
-    ArticleCategoryRelDO articleCategoryRelDO =
-        ArticleCategoryRelDO.builder().articleId(articleId).categoryId(categoryId).build();
-    // 执行插入新的关联关系
-    articleCategoryRelMapper.insert(articleCategoryRelDO);
+                // 先删除该文章关联的分类记录，在插入新的关联关系
+                articleCategoryRelMapper.deleteByArticleId(articleId);
+                ArticleCategoryRelDO articleCategoryRelDO =
+                    ArticleCategoryRelDO.builder()
+                        .articleId(articleId)
+                        .categoryId(categoryId)
+                        .build();
+                // 执行插入新的关联关系
+                articleCategoryRelMapper.insert(articleCategoryRelDO);
 
-    // 4.更新文章关联的标签集合
-    // 先删除文章对应的标签
-    articleTagRelMapper.deleteByArticleId(articleId);
-    List<String> publishTags = updateArticleReqVO.getTags();
-    insertTags(articleId, publishTags);
+                // 4.更新文章关联的标签集合
+                // 先删除文章对应的标签
+                articleTagRelMapper.deleteByArticleId(articleId);
+                List<String> publishTags = updateArticleReqVO.getTags();
+                insertTags(articleId, publishTags);
+                return articleId;
+              } catch (Exception e) {
+                status.setRollbackOnly();
+                log.error("更新失败，事务回滚：", e);
+                return null;
+              }
+            });
 
     // 发布文章修改事件
-    eventPublisher.publishEvent(new UpdateArticleEvent(this, articleId));
+    eventPublisher.publishEvent(new UpdateArticleEvent(this, rfArticleId));
 
     return Response.success();
   }

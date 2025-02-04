@@ -1,7 +1,7 @@
 package com.slilio.weblog.web.markdown;
 
-import com.slilio.weblog.web.markdown.provider.NofollowLinkAttributeProvider;
 import com.slilio.weblog.web.markdown.renderer.ImageNodeRenderer;
+import com.slilio.weblog.web.markdown.renderer.LinkNodeRenderer;
 import java.util.Arrays;
 import java.util.List;
 import org.commonmark.Extension;
@@ -36,8 +36,8 @@ public class MarkdownHelper {
     HTML_RENDERER =
         HtmlRenderer.builder()
             .extensions(extensions)
-            .attributeProviderFactory(context -> new NofollowLinkAttributeProvider()) // 链接拒绝跟随爬取
             .nodeRendererFactory(context -> new ImageNodeRenderer(context)) // 图片大小以及添加说明
+            .nodeRendererFactory(context -> new LinkNodeRenderer(context)) // 自定义超链接解析
             .build();
   }
 

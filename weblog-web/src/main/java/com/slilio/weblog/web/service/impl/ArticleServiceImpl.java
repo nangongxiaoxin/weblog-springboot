@@ -17,6 +17,7 @@ import com.slilio.weblog.web.model.vo.article.*;
 import com.slilio.weblog.web.model.vo.category.FindCategoryListRspVO;
 import com.slilio.weblog.web.model.vo.tag.FindTagListRspVO;
 import com.slilio.weblog.web.service.ArticleService;
+import com.slilio.weblog.web.utils.MarkdownStatsUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -155,6 +156,12 @@ public class ArticleServiceImpl implements ArticleService {
 
     // 查询正文
     ArticleContentDO articleContentDO = articleContentMapper.selectByArticleId(articleId);
+    String content = articleContentDO.getContent();
+
+    // 计算Markdown正文字数
+    Integer totalWords = MarkdownStatsUtil.calculateWordsCount(content);
+    // 计算阅读时间
+    String readingTimes = MarkdownStatsUtil.calculateReadingTime(totalWords);
 
     // DO转VO
     FindArticleDetailRspVO vo =
@@ -163,6 +170,8 @@ public class ArticleServiceImpl implements ArticleService {
             .createTime(articleDO.getCreateTime())
             .content(MarkdownHelper.convertMarkdown2Html(articleContentDO.getContent()))
             .readNum(articleDO.getReadNum())
+            .totalWords(totalWords)
+            .readTime(readingTimes)
             .build();
 
     // 查询所属分类
