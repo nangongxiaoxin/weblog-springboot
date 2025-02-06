@@ -1,6 +1,7 @@
 package com.slilio.weblog.admin.event.subscriber;
 
 import com.slilio.weblog.admin.event.DeleteArticleEvent;
+import com.slilio.weblog.admin.service.AdminStatisticsService;
 import com.slilio.weblog.search.LuceneHelper;
 import com.slilio.weblog.search.index.ArticleIndex;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DeleteArticleSubscriber implements ApplicationListener<DeleteArticleEvent> {
   @Autowired private LuceneHelper luceneHelper;
+  @Autowired private AdminStatisticsService StatisticsService;
 
   @Override
   @Async("threadPoolTaskExecutor")
@@ -33,5 +35,9 @@ public class DeleteArticleSubscriber implements ApplicationListener<DeleteArticl
     long count = luceneHelper.deleteDocument(ArticleIndex.NAME, condition);
 
     log.info("==> 删除文章对应 Lucene 文档结束，articleId: {}，受影响行数: {}", articleId, count);
+
+    // 重新统计各个分类下的文章总数
+    StatisticsService.statisticsCategoryArticleTotal();
+    log.info("==>重新统计各个分类下文章总数");
   }
 }

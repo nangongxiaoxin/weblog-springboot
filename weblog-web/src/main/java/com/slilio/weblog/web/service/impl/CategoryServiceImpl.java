@@ -52,6 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
                       FindCategoryListRspVO.builder()
                           .id(categoryDO.getId())
                           .name(categoryDO.getName())
+                              .articleTotal(categoryDO.getArticlesTotal())
                           .build())
               .collect(Collectors.toList());
     }

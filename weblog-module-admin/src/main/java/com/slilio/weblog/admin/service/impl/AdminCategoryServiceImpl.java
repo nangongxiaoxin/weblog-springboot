@@ -89,6 +89,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
                           .id(categoryDO.getId())
                           .name(categoryDO.getName())
                           .createTime(categoryDO.getCreateTime())
+                          .articlesTotal(categoryDO.getArticlesTotal())
                           .build())
               .collect(Collectors.toList());
     }
