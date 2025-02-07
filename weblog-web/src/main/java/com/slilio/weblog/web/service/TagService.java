@@ -2,6 +2,7 @@ package com.slilio.weblog.web.service;
 
 import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.model.vo.tag.FindTagArticlePageListReqVO;
+import com.slilio.weblog.web.model.vo.tag.FindTagListReqVO;
 
 public interface TagService {
   /**
@@ -9,7 +10,7 @@ public interface TagService {
    *
    * @return
    */
-  Response findTagList();
+  Response findTagList(FindTagListReqVO findTagListReqVO);
 
   /**
    * 获取标签下文章分页列表

@@ -16,6 +16,7 @@ import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.convert.ArticleConvert;
 import com.slilio.weblog.web.model.vo.category.FindCategoryArticlePageListReqVO;
 import com.slilio.weblog.web.model.vo.category.FindCategoryArticlePageListRspVO;
+import com.slilio.weblog.web.model.vo.category.FindCategoryListReqVO;
 import com.slilio.weblog.web.model.vo.category.FindCategoryListRspVO;
 import com.slilio.weblog.web.service.CategoryService;
 import java.util.List;
@@ -39,9 +40,18 @@ public class CategoryServiceImpl implements CategoryService {
    * @return
    */
   @Override
-  public Response findCategoryList() {
-    // 查询所有分类
-    List<CategoryDO> categoryDOS = categoryMapper.selectList(Wrappers.emptyWrapper());
+  public Response findCategoryList(FindCategoryListReqVO findCategoryListReqVO) {
+    Long size = findCategoryListReqVO.getSize();
+    List<CategoryDO> categoryDOS = null;
+    // 如果接口入参中未指定size
+    if (Objects.isNull(size) || size == 0) {
+      // 查明所有分类
+      categoryDOS = categoryMapper.selectList(Wrappers.emptyWrapper());
+    } else {
+      // 否则查询指定数量
+      categoryDOS = categoryMapper.selectByLimit(size);
+    }
+
     // VO转DO
     List<FindCategoryListRspVO> vos = null;
     if (!CollectionUtils.isEmpty(categoryDOS)) {
@@ -52,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
                       FindCategoryListRspVO.builder()
                           .id(categoryDO.getId())
                           .name(categoryDO.getName())
-                              .articleTotal(categoryDO.getArticlesTotal())
+                          .articleTotal(categoryDO.getArticlesTotal())
                           .build())
               .collect(Collectors.toList());
     }

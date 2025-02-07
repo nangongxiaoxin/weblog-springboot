@@ -16,6 +16,7 @@ import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.convert.ArticleConvert;
 import com.slilio.weblog.web.model.vo.tag.FindTagArticlePageListReqVO;
 import com.slilio.weblog.web.model.vo.tag.FindTagArticlePageListRspVO;
+import com.slilio.weblog.web.model.vo.tag.FindTagListReqVO;
 import com.slilio.weblog.web.model.vo.tag.FindTagListRspVO;
 import com.slilio.weblog.web.service.TagService;
 import java.util.List;
@@ -38,9 +39,18 @@ public class TagServiceImpl implements TagService {
    * @return
    */
   @Override
-  public Response findTagList() {
-    // 查询所有标签
-    List<TagDO> tagDOS = tagMapper.selectList(Wrappers.emptyWrapper());
+  public Response findTagList(FindTagListReqVO findTagListReqVO) {
+    Long size = findTagListReqVO.getSize();
+
+    List<TagDO> tagDOS = null;
+    if (Objects.isNull(size) || size == 0) {
+      // 查询所有标签
+      tagDOS = tagMapper.selectList(Wrappers.emptyWrapper());
+
+    } else {
+      // 否则查询指定的数量
+      tagDOS = tagMapper.selectByLimit(size);
+    }
 
     // DO转VO
     List<FindTagListRspVO> vos = null;

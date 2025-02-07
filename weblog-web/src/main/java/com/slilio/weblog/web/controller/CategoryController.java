@@ -3,6 +3,7 @@ package com.slilio.weblog.web.controller;
 import com.slilio.weblog.common.aspect.ApiOperationLog;
 import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.model.vo.category.FindCategoryArticlePageListReqVO;
+import com.slilio.weblog.web.model.vo.category.FindCategoryListReqVO;
 import com.slilio.weblog.web.service.CategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,8 +23,9 @@ public class CategoryController {
   @PostMapping("/list")
   @ApiOperation(value = "前台获取分类列表")
   @ApiOperationLog(description = "前台获取分类列表")
-  public Response FindCategoryList() {
-    return categoryService.findCategoryList();
+  public Response FindCategoryList(
+      @RequestBody @Validated FindCategoryListReqVO findCategoryListReqVO) {
+    return categoryService.findCategoryList(findCategoryListReqVO);
   }
 
   @PostMapping("/article/list")
