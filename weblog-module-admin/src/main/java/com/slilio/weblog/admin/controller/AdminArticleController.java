@@ -63,6 +63,12 @@ public class AdminArticleController {
     return adminArticleService.findArticlePageList(findArticlePageListReqVO);
   }
 
+  /**
+   * 查询文章详情
+   *
+   * @param findArticleDetailReqVO
+   * @return
+   */
   @PostMapping("/detail")
   @ApiOperation(value = "查询文章详情")
   @ApiOperationLog(description = "查询文章详情")
@@ -71,11 +77,32 @@ public class AdminArticleController {
     return adminArticleService.findArticleDetail(findArticleDetailReqVO);
   }
 
+  /**
+   * 更新文章
+   *
+   * @param updateArticleReqVO
+   * @return
+   */
   @PostMapping("/update")
   @ApiOperation(value = "更新文章")
   @ApiOperationLog(description = "更新文章")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Response updateArticle(@RequestBody @Validated UpdateArticleReqVO updateArticleReqVO) {
     return adminArticleService.updateArticle(updateArticleReqVO);
+  }
+
+  /**
+   * 更新文章置顶状态
+   *
+   * @param updateArticleIsTopReqVO
+   * @return
+   */
+  @PostMapping("/isTop/update")
+  @ApiOperation(value = "更新文章置顶状态")
+  @ApiOperationLog(description = "更新文章置顶状态")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public Response updateArticleIsTop(
+      @RequestBody @Validated UpdateArticleIsTopReqVO updateArticleIsTopReqVO) {
+    return adminArticleService.updateArticleIsTop(updateArticleIsTopReqVO);
   }
 }

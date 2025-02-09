@@ -27,4 +27,5 @@ public class ArticleDO {
     private LocalDateTime updateTime;
     private Boolean isDeleted;
     private Long readNum;
+    private Integer weight;
 }

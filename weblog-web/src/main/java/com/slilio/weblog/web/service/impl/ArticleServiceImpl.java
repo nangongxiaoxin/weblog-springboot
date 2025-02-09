@@ -62,7 +62,13 @@ public class ArticleServiceImpl implements ArticleService {
       // 文章DO转VO
       vos =
           articleDOS.stream()
-              .map(articleDO -> ArticleConvert.INSTANCE.convertDO2VO(articleDO))
+              .map(
+                  articleDO -> {
+                    FindIndexArticlePageListRspVO vo =
+                        ArticleConvert.INSTANCE.convertDO2VO(articleDO);
+                    vo.setIsTop(articleDO.getWeight() > 0); // 是否置顶
+                    return vo;
+                  })
               .collect(Collectors.toList());
       // 拿到所有文章的ID集合
       List<Long> articleIds =
