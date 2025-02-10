@@ -9,13 +9,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/** 文章DO */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@TableName("t_article")
-public class ArticleDO {
+@TableName("t_wiki")
+public class WikiDo {
+
   @TableId(type = IdType.AUTO)
   private Long id;
 
@@ -25,7 +25,6 @@ public class ArticleDO {
   private LocalDateTime createTime;
   private LocalDateTime updateTime;
   private Boolean isDeleted;
-  private Long readNum;
   private Integer weight;
-  private Integer type;
+  private Boolean isPublish;
 }

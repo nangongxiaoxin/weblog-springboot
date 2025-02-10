@@ -1,0 +1,6 @@
+package com.slilio.weblog.common.domain.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.slilio.weblog.common.domain.dos.WikiDo;
+
+public interface WikiMapper extends BaseMapper<WikiDo> {}
