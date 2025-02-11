@@ -1,6 +1,5 @@
 package com.slilio.weblog.web.markdown.renderer;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -11,6 +10,7 @@ import org.commonmark.node.Node;
 import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlWriter;
+import org.springframework.util.CollectionUtils;
 
 public class ImageNodeRenderer implements NodeRenderer {
   private final HtmlWriter html;
@@ -65,10 +65,10 @@ public class ImageNodeRenderer implements NodeRenderer {
     }
     sb.append(">");
 
-//    if (StringUtils.isNotBlank(imgTitle)) {
-//      // 图片下下方文字
-//      sb.append(String.format("<span>%s</span>", imgTitle));
-//    }
+    //    if (StringUtils.isNotBlank(imgTitle)) {
+    //      // 图片下下方文字
+    //      sb.append(String.format("<span>%s</span>", imgTitle));
+    //    }
     if (StringUtils.isNotBlank(imgTitle)) {
       // 图文下方文字
       sb.append(String.format("<span class=\"image-caption\">%s</span>", imgTitle));

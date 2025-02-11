@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @TableName("t_wiki")
-public class WikiDo {
+public class WikiDO {
 
   @TableId(type = IdType.AUTO)
   private Long id;

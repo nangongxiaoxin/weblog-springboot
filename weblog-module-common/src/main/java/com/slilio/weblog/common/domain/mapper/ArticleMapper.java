@@ -141,4 +141,15 @@ public interface ArticleMapper extends BaseMapper<ArticleDO> {
             .orderByDesc(ArticleDO::getWeight) // 按权重值降序排列
             .last("limit 1")); // 仅查询出一条
   }
+
+  /**
+   * 批量更新文章
+   *
+   * @param articleDO
+   * @param ids
+   * @return
+   */
+  default int updateByIds(ArticleDO articleDO, List<Long> ids) {
+    return update(articleDO, Wrappers.<ArticleDO>lambdaUpdate().in(ArticleDO::getId, ids));
+  }
 }

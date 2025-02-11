@@ -1,6 +1,8 @@
 package com.slilio.weblog.admin.controller;
 
 import com.slilio.weblog.admin.model.vo.wiki.AddWikiReqVO;
+import com.slilio.weblog.admin.model.vo.wiki.DeleteWikiReqVO;
+import com.slilio.weblog.admin.model.vo.wiki.FindWikiPageListReqVO;
 import com.slilio.weblog.admin.service.AdminWikiService;
 import com.slilio.weblog.common.aspect.ApiOperationLog;
 import com.slilio.weblog.common.utils.Response;
@@ -26,5 +28,21 @@ public class AdminWikiController {
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   public Response addWiki(@RequestBody @Validated AddWikiReqVO addWikiReqVO) {
     return wikiService.addWiki(addWikiReqVO);
+  }
+
+  @PostMapping("/delete")
+  @ApiOperation(value = "知识库删除")
+  @ApiOperationLog(description = "知识库删除")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public Response deleteWiki(@RequestBody @Validated DeleteWikiReqVO deleteWikiReqVO) {
+    return wikiService.deleteWiki(deleteWikiReqVO);
+  }
+
+  @PostMapping("/list")
+  @ApiOperation(value = "查询知识库分页数据")
+  @ApiOperationLog(description = "查询知识库分页数据")
+  public Response findWikiPageList(
+      @RequestBody @Validated FindWikiPageListReqVO findWikiPageListReqVO) {
+    return wikiService.findWikiPageList(findWikiPageListReqVO);
   }
 }

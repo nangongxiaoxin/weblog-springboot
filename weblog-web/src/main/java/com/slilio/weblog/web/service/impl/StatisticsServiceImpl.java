@@ -1,6 +1,5 @@
 package com.slilio.weblog.web.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.slilio.weblog.common.domain.dos.ArticleDO;
 import com.slilio.weblog.common.domain.mapper.ArticleMapper;
@@ -13,6 +12,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
