@@ -43,4 +43,16 @@ public interface WikiMapper extends BaseMapper<WikiDO> {
             .orderByDesc(WikiDO::getCreateTime); // 按创建时间倒序
     return selectPage(page, wrapper);
   }
+
+  /**
+   * 查询最大权重
+   *
+   * @return
+   */
+  default WikiDO selectMaxWeight() {
+    return selectOne(
+        Wrappers.<WikiDO>lambdaQuery()
+            .orderByDesc(WikiDO::getWeight) // 按权重降序排列
+            .last("limit 1")); // 仅查询出一条
+  }
 }

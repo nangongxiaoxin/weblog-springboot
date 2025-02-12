@@ -1,8 +1,6 @@
 package com.slilio.weblog.admin.service;
 
-import com.slilio.weblog.admin.model.vo.wiki.AddWikiReqVO;
-import com.slilio.weblog.admin.model.vo.wiki.DeleteWikiReqVO;
-import com.slilio.weblog.admin.model.vo.wiki.FindWikiPageListReqVO;
+import com.slilio.weblog.admin.model.vo.wiki.*;
 import com.slilio.weblog.common.utils.Response;
 
 public interface AdminWikiService {
@@ -29,4 +27,36 @@ public interface AdminWikiService {
    * @return
    */
   Response findWikiPageList(FindWikiPageListReqVO findWikiPageListReqVO);
+
+  /**
+   * 更新知识库置顶状态
+   *
+   * @param updateWikiIsTopReqVO
+   * @return
+   */
+  Response updateWikiIsTop(UpdateWikiIsTopReqVO updateWikiIsTopReqVO);
+
+  /**
+   * 更新知识库发布状态
+   *
+   * @param updateWikiIsPublishReqVO
+   * @return
+   */
+  Response updateWikiIsPublish(UpdateWikiIsPublishReqVO updateWikiIsPublishReqVO);
+
+  /**
+   * 更新知识库
+   *
+   * @param updateWikiReqVO
+   * @return
+   */
+  Response updateWiki(UpdateWikiReqVO updateWikiReqVO);
+
+  /**
+   * 查询知识库目录
+   *
+   * @param findWikiCatalogListReqVO
+   * @return
+   */
+  Response findWikiCatalogList(FindWikiCatalogListReqVO findWikiCatalogListReqVO);
 }

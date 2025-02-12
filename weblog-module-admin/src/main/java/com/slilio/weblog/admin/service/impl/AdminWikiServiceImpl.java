@@ -1,11 +1,9 @@
 package com.slilio.weblog.admin.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.slilio.weblog.admin.convert.WikiConvert;
-import com.slilio.weblog.admin.model.vo.wiki.AddWikiReqVO;
-import com.slilio.weblog.admin.model.vo.wiki.DeleteWikiReqVO;
-import com.slilio.weblog.admin.model.vo.wiki.FindWikiPageListReqVO;
-import com.slilio.weblog.admin.model.vo.wiki.FindWikiPageListRspVO;
+import com.slilio.weblog.admin.model.vo.wiki.*;
 import com.slilio.weblog.admin.service.AdminWikiService;
 import com.slilio.weblog.common.domain.dos.ArticleDO;
 import com.slilio.weblog.common.domain.dos.WikiCatalogDO;
@@ -21,6 +19,7 @@ import com.slilio.weblog.common.utils.PageResponse;
 import com.slilio.weblog.common.utils.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -142,5 +141,144 @@ public class AdminWikiServiceImpl implements AdminWikiService {
               .collect(Collectors.toList());
     }
     return PageResponse.success(wikiDOPage, vos);
+  }
+
+  /**
+   * 更新知识库置顶状态
+   *
+   * @param updateWikiIsTopReqVO
+   * @return
+   */
+  @Override
+  public Response updateWikiIsTop(UpdateWikiIsTopReqVO updateWikiIsTopReqVO) {
+    Long wikiId = updateWikiIsTopReqVO.getId();
+    Boolean isTop = updateWikiIsTopReqVO.getIsTop();
+
+    // 默认权重值为0，即不参与置顶
+    Integer weight = 0;
+    if (isTop) {
+      // 查询最大权重值
+      WikiDO wikiDO = wikiMapper.selectMaxWeight();
+      Integer maxWeight = wikiDO.getWeight();
+      // 最大权重值＋1
+      weight = maxWeight + 1;
+    }
+    // 更新该知识库的权重值
+    wikiMapper.updateById(WikiDO.builder().id(wikiId).weight(weight).build());
+    return Response.success();
+  }
+
+  /**
+   * 更新知识库发布状态
+   *
+   * @param updateWikiIsPublishReqVO
+   * @return
+   */
+  @Override
+  public Response updateWikiIsPublish(UpdateWikiIsPublishReqVO updateWikiIsPublishReqVO) {
+    Long wikiId = updateWikiIsPublishReqVO.getId();
+    Boolean isPublish = updateWikiIsPublishReqVO.getIsPublish();
+    // 更新发布状态
+    wikiMapper.updateById(WikiDO.builder().id(wikiId).isPublish(isPublish).build());
+    return Response.success();
+  }
+
+  /**
+   * 更新知识库
+   *
+   * @param updateWikiReqVO
+   * @return
+   */
+  @Override
+  public Response updateWiki(UpdateWikiReqVO updateWikiReqVO) {
+    // VO转DO
+    WikiDO wikiDO =
+        WikiDO.builder()
+            .id(updateWikiReqVO.getId())
+            .title(updateWikiReqVO.getTitle())
+            .cover(updateWikiReqVO.getCover())
+            .summary(updateWikiReqVO.getSummary())
+            .updateTime(LocalDateTime.now())
+            .build();
+    // 根据id更新知识库
+    wikiMapper.updateById(wikiDO);
+    return Response.success();
+  }
+
+  /**
+   * 查询知识库目录
+   *
+   * @param findWikiCatalogListReqVO
+   * @return
+   */
+  @Override
+  public Response findWikiCatalogList(FindWikiCatalogListReqVO findWikiCatalogListReqVO) {
+    Long wikiId = findWikiCatalogListReqVO.getId();
+
+    // 查询此知识库下所有目录
+    List<WikiCatalogDO> catalogDOS = wikiCatalogMapper.selectByWikiId(wikiId);
+    // DO转VO
+    // 组装一、二级目录结果
+    List<FindWikiCatalogListRspVO> vos = null;
+    if (!CollectionUtils.isEmpty(catalogDOS)) {
+      vos = Lists.newArrayList();
+
+      // 提取一级目录结构
+      List<WikiCatalogDO> level1Catalogs =
+          catalogDOS.stream()
+              .filter(
+                  catalogDO ->
+                      Objects.equals(
+                          catalogDO.getLevel(), WikiCatalogLevelEnum.ONE.getValue())) // 一级目录
+              .sorted(Comparator.comparing(WikiCatalogDO::getSort)) // 升序排列
+              .collect(Collectors.toList());
+
+      // 循环一级目录DO集合，转VO
+      for (WikiCatalogDO level1Catalog : level1Catalogs) {
+        vos.add(
+            FindWikiCatalogListRspVO.builder()
+                .id(level1Catalog.getId())
+                .articleId(level1Catalog.getArticleId())
+                .title(level1Catalog.getTitle())
+                .level(level1Catalog.getLevel())
+                .sort(level1Catalog.getSort())
+                .editing(Boolean.FALSE)
+                .build());
+      }
+
+      // 设置一级目录下，二级目录的数据
+      vos.forEach(
+          level1Catalog -> {
+            Long parentId = level1Catalog.getId();
+            // 提取二级目录
+            List<WikiCatalogDO> level2CatalogDOS =
+                catalogDOS.stream()
+                    .filter(
+                        catalogDO ->
+                            Objects.equals(catalogDO.getParentId(), parentId)
+                                && Objects.equals(
+                                    catalogDO.getLevel(), WikiCatalogLevelEnum.TWO.getValue()))
+                    .sorted(Comparator.comparing(WikiCatalogDO::getSort))
+                    .collect(Collectors.toList());
+
+            // 二级目录DO转VO
+            List<FindWikiCatalogListRspVO> level2Catalogs =
+                level2CatalogDOS.stream()
+                    .map(
+                        catalogDO ->
+                            FindWikiCatalogListRspVO.builder()
+                                .id(catalogDO.getId())
+                                .articleId(catalogDO.getArticleId())
+                                .title(catalogDO.getTitle())
+                                .level(catalogDO.getLevel())
+                                .sort(catalogDO.getSort())
+                                .editing(Boolean.FALSE)
+                                .build())
+                    .collect(Collectors.toList());
+
+            level1Catalog.setChildren(level2Catalogs);
+          });
+    }
+    return Response.success(vos);
   }
 }
