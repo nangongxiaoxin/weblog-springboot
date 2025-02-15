@@ -52,7 +52,8 @@ public class ArticleServiceImpl implements ArticleService {
     Long size = findIndexArticlePageListReqVO.getSize();
 
     // 1.分页查询文章主题记录
-    Page<ArticleDO> articleDOPage = articleMapper.selectPageList(current, size, null, null, null);
+    Page<ArticleDO> articleDOPage =
+        articleMapper.selectPageList(current, size, null, null, null, null);
 
     // 返回分页数据
     List<ArticleDO> articleDOS = articleDOPage.getRecords();
