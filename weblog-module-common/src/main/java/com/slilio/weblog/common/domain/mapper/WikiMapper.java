@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.slilio.weblog.common.domain.dos.WikiDO;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 public interface WikiMapper extends BaseMapper<WikiDO> {
@@ -54,5 +55,19 @@ public interface WikiMapper extends BaseMapper<WikiDO> {
         Wrappers.<WikiDO>lambdaQuery()
             .orderByDesc(WikiDO::getWeight) // 按权重降序排列
             .last("limit 1")); // 仅查询出一条
+  }
+
+  /**
+   * 查询已经发布的知识库
+   *
+   * @return
+   */
+  default List<WikiDO> selectPublished() {
+    return selectList(
+        Wrappers.<WikiDO>lambdaQuery()
+            .eq(WikiDO::getIsPublish, 1) // 查询已经发布的，is_publish 值为1
+            .orderByDesc(WikiDO::getWeight) // 按照权重排列
+            .orderByDesc(WikiDO::getCreateTime) // 按照创建时间排列
+        );
   }
 }
