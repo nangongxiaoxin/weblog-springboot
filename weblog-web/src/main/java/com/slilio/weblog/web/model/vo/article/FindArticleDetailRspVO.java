@@ -25,4 +25,5 @@ public class FindArticleDetailRspVO {
   private FindPreNextArticleRspVO nextArticle; // 下一篇文章
   private Integer totalWords; // 总字数
   private String readTime; // 总时长
+  private LocalDateTime updateTime; // 最后更新时间
 }
