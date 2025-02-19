@@ -40,7 +40,9 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
   // 该标签下包含文章，请先删除对应文章，才能删除！
   TAG_CAN_NOT_DELETE("20012", "该标签下包含文章，请先删除对应文章，才能删除！"),
   // 该知识库不存在
-  WIKI_NOT_FOUND("20013", "该知识库不存在");
+  WIKI_NOT_FOUND("20013", "该知识库不存在"),
+  // QQ号不正确
+  NOT_QQ_NUMBER("20014", "QQ号格式不正确");
 
   // 异常码
   private String errorCode;
