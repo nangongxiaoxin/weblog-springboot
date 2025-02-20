@@ -2,6 +2,7 @@ package com.slilio.weblog.web.service;
 
 import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.model.vo.comment.FindQQUserInfoReqVO;
+import com.slilio.weblog.web.model.vo.comment.PublishCommentReqVO;
 
 // 评论
 public interface CommentService {
@@ -12,4 +13,12 @@ public interface CommentService {
    * @return
    */
   Response findQQUserInfo(FindQQUserInfoReqVO findQQUserInfoReqVO);
+
+  /**
+   * 发布评论
+   *
+   * @param publishCommentReqVO
+   * @return
+   */
+  Response publishComment(PublishCommentReqVO publishCommentReqVO);
 }
