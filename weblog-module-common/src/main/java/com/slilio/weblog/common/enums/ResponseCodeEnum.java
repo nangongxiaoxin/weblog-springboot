@@ -42,7 +42,12 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
   // 该知识库不存在
   WIKI_NOT_FOUND("20013", "该知识库不存在"),
   // QQ号不正确
-  NOT_QQ_NUMBER("20014", "QQ号格式不正确");
+  NOT_QQ_NUMBER("20014", "QQ号格式不正确"),
+  // 内容包含敏感词
+  COMMENT_CONTAIN_SENSITIVE_WORD("20015", "评论内容中包含敏感词，请重新编辑后再提交"),
+  // 待审核
+  COMMENT_WAIT_EXAMINE("20016", "评论已提交, 等待博主审核通过"),
+  ;
 
   // 异常码
   private String errorCode;

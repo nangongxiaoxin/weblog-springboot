@@ -15,13 +15,17 @@ import com.slilio.weblog.web.model.vo.comment.PublishCommentReqVO;
 import com.slilio.weblog.web.service.CommentService;
 import com.slilio.weblog.web.utils.StringUtil;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import toolgood.words.IllegalWordsSearch;
+import toolgood.words.IllegalWordsSearchResult;
 
 @Service
 @Slf4j
@@ -30,6 +34,9 @@ public class CommentServiceImpl implements CommentService {
   @Autowired QQInfoApiProperties qqInfoApiProperties;
   @Autowired private BlogSettingsMapper blogSettingsMapper;
   @Autowired private CommentMapper commentMapper;
+  @Autowired private IllegalWordsSearch wordsSearch;
+  @Autowired
+  private IllegalWordsSearch illegalWordsSearch;
 
   /**
    * 获取QQ信息
@@ -129,9 +136,23 @@ public class CommentServiceImpl implements CommentService {
       status = CommentStatusEnum.WAIT_EXAMINE.getCode();
     }
 
+    // 评论内容是否包含敏感词
+    boolean isContainSensitiveWord = false;
     // 评论内容开启了敏感词过滤
     if (isCommentSensiWordOpen) {
-      // todo 敏感词过滤逻辑
+      //校验评论中是否包含敏感词
+      isContainSensitiveWord = wordsSearch.ContainsAny(content);
+
+      if (isContainSensitiveWord) {
+        //若包含敏感词
+        status = CommentStatusEnum.EXAMINE_FAILED.getCode();
+        //匹配到所有的敏感词组
+        List<IllegalWordsSearchResult> results = wordsSearch.FindAll(content);
+        List<String> keywords = results.stream().map(result-> result.Keyword).collect(Collectors.toList());
+        //不通过的原因
+        reason = String.format("系统自动拦截，包含敏感词：%s", keywords);
+        log.warn("此评论内容中包含敏感词: {}, content: {}", keywords, content);
+      }
     }
 
     // 构建DO对象
@@ -150,6 +171,15 @@ public class CommentServiceImpl implements CommentService {
             .reason(reason)
             .build();
     commentMapper.insert(commentDO);
+
+    //给予前端对应的提示信息
+    if (isContainSensitiveWord) {
+      throw new BizException(ResponseCodeEnum.COMMENT_CONTAIN_SENSITIVE_WORD);
+    }
+    if (Objects.equals(status, CommentStatusEnum.WAIT_EXAMINE.getCode())) {
+      throw new BizException(ResponseCodeEnum.COMMENT_WAIT_EXAMINE);
+    }
+
     return Response.success();
   }
 }
