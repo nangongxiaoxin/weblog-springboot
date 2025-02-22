@@ -9,20 +9,18 @@ import com.slilio.weblog.common.enums.ResponseCodeEnum;
 import com.slilio.weblog.common.exception.BizException;
 import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.config.QQInfoApiProperties;
-import com.slilio.weblog.web.model.vo.comment.FindQQUserInfoReqVO;
-import com.slilio.weblog.web.model.vo.comment.FindQQUserInfoRspVO;
-import com.slilio.weblog.web.model.vo.comment.PublishCommentReqVO;
+import com.slilio.weblog.web.convert.CommentConvert;
+import com.slilio.weblog.web.model.vo.comment.*;
 import com.slilio.weblog.web.service.CommentService;
 import com.slilio.weblog.web.utils.StringUtil;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import toolgood.words.IllegalWordsSearch;
 import toolgood.words.IllegalWordsSearchResult;
@@ -35,8 +33,7 @@ public class CommentServiceImpl implements CommentService {
   @Autowired private BlogSettingsMapper blogSettingsMapper;
   @Autowired private CommentMapper commentMapper;
   @Autowired private IllegalWordsSearch wordsSearch;
-  @Autowired
-  private IllegalWordsSearch illegalWordsSearch;
+  @Autowired private IllegalWordsSearch illegalWordsSearch;
 
   /**
    * 获取QQ信息
@@ -140,16 +137,17 @@ public class CommentServiceImpl implements CommentService {
     boolean isContainSensitiveWord = false;
     // 评论内容开启了敏感词过滤
     if (isCommentSensiWordOpen) {
-      //校验评论中是否包含敏感词
+      // 校验评论中是否包含敏感词
       isContainSensitiveWord = wordsSearch.ContainsAny(content);
 
       if (isContainSensitiveWord) {
-        //若包含敏感词
+        // 若包含敏感词
         status = CommentStatusEnum.EXAMINE_FAILED.getCode();
-        //匹配到所有的敏感词组
+        // 匹配到所有的敏感词组
         List<IllegalWordsSearchResult> results = wordsSearch.FindAll(content);
-        List<String> keywords = results.stream().map(result-> result.Keyword).collect(Collectors.toList());
-        //不通过的原因
+        List<String> keywords =
+            results.stream().map(result -> result.Keyword).collect(Collectors.toList());
+        // 不通过的原因
         reason = String.format("系统自动拦截，包含敏感词：%s", keywords);
         log.warn("此评论内容中包含敏感词: {}, content: {}", keywords, content);
       }
@@ -172,7 +170,7 @@ public class CommentServiceImpl implements CommentService {
             .build();
     commentMapper.insert(commentDO);
 
-    //给予前端对应的提示信息
+    // 给予前端对应的提示信息
     if (isContainSensitiveWord) {
       throw new BizException(ResponseCodeEnum.COMMENT_CONTAIN_SENSITIVE_WORD);
     }
@@ -181,5 +179,75 @@ public class CommentServiceImpl implements CommentService {
     }
 
     return Response.success();
+  }
+
+  /**
+   * 查询页面所有评论
+   *
+   * @param findCommentListReqVO
+   * @return
+   */
+  @Override
+  public Response findCommentList(FindCommentListReqVO findCommentListReqVO) {
+    // 路由地址
+    String routerUrl = findCommentListReqVO.getRouterUrl();
+
+    // 查询该路由下所有的评论（仅查询状态正常的）
+    List<CommentDO> commentDOS =
+        commentMapper.selectByRouterUrlAndStatus(routerUrl, CommentStatusEnum.NORMAL.getCode());
+    // 总评论数
+    Integer total = commentDOS.size();
+
+    List<FindCommentItemRspVO> vos = null;
+    // DO转VO
+    if (!CollectionUtils.isEmpty(commentDOS)) {
+      // 一级评论
+      vos =
+          commentDOS.stream()
+              .filter(
+                  commentDO ->
+                      Objects.isNull(
+                          commentDO.getParentCommentId())) // parentCommentId 父级 ID 为空，则表示为一级评论
+              .map(commentDO -> CommentConvert.INSTANCE.convertDO2VO(commentDO))
+              .collect(Collectors.toList());
+
+      // 循环设置评论回复数据
+      vos.forEach(
+          vo -> {
+            Long commentId = vo.getId();
+            List<FindCommentItemRspVO> childComments =
+                commentDOS.stream()
+                    .filter(
+                        commentDO ->
+                            Objects.equals(
+                                commentDO.getParentCommentId(), commentId)) // 过滤出一级评论下所有的子评论
+                    .sorted(Comparator.comparing(CommentDO::getCreateTime)) // 按照发布时间升序排列
+                    .map(
+                        commentDO -> {
+                          FindCommentItemRspVO findPageCommentRspVO =
+                              CommentConvert.INSTANCE.convertDO2VO(commentDO);
+                          Long replyCommentId = commentDO.getReplyCommentId();
+                          // 若二级评论的getReplyCommentId不等于一级评论ID，前端则需要展示【回复 @ xxx】，需要设置回复昵称
+                          if (!Objects.equals(replyCommentId, commentId)) {
+                            // 设置回复用户的昵称
+                            Optional<CommentDO> optionalCommentDO =
+                                commentDOS.stream()
+                                    .filter(
+                                        commentDO1 ->
+                                            Objects.equals(commentDO1.getId(), replyCommentId))
+                                    .findFirst();
+                            if (optionalCommentDO.isPresent()) {
+                              findPageCommentRspVO.setReplyNickname(
+                                  optionalCommentDO.get().getNickname());
+                            }
+                          }
+                          return findPageCommentRspVO;
+                        })
+                    .collect(Collectors.toList());
+            vo.setChildComments(childComments);
+          });
+    }
+
+    return Response.success(FindCommentListRspVO.builder().total(total).comments(vos).build());
   }
 }

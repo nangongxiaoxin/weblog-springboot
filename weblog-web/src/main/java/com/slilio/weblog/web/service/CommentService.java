@@ -1,6 +1,7 @@
 package com.slilio.weblog.web.service;
 
 import com.slilio.weblog.common.utils.Response;
+import com.slilio.weblog.web.model.vo.comment.FindCommentListReqVO;
 import com.slilio.weblog.web.model.vo.comment.FindQQUserInfoReqVO;
 import com.slilio.weblog.web.model.vo.comment.PublishCommentReqVO;
 
@@ -21,4 +22,12 @@ public interface CommentService {
    * @return
    */
   Response publishComment(PublishCommentReqVO publishCommentReqVO);
+
+  /**
+   * 查询页面所有评论
+   *
+   * @param findCommentListReqVO
+   * @return
+   */
+  Response findCommentList(FindCommentListReqVO findCommentListReqVO);
 }
