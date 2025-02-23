@@ -42,4 +42,6 @@ public class BlogSettingsDO {
   private Boolean isCommentSensiWordOpen;
 
   private Boolean isCommentExamineOpen;
+
+  private String domain;
 }

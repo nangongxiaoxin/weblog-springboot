@@ -39,6 +39,7 @@ minio:
 lucene:
   indexDir: F:\\java_workspace\\lucene-index # lucene 索引存放的位置
 
+#QQ信息获取api接口
 qqinfoapi:
   apiUrl: https://api.nsmao.net/api/qq/query
   apiKey: ALOb8Waza2pHH7doZYmBZvURF8

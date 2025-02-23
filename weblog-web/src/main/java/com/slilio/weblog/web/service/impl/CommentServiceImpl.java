@@ -10,6 +10,7 @@ import com.slilio.weblog.common.exception.BizException;
 import com.slilio.weblog.common.utils.Response;
 import com.slilio.weblog.web.config.QQInfoApiProperties;
 import com.slilio.weblog.web.convert.CommentConvert;
+import com.slilio.weblog.web.event.PublishCommentEvent;
 import com.slilio.weblog.web.model.vo.comment.*;
 import com.slilio.weblog.web.service.CommentService;
 import com.slilio.weblog.web.utils.StringUtil;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -33,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
   @Autowired private BlogSettingsMapper blogSettingsMapper;
   @Autowired private CommentMapper commentMapper;
   @Autowired private IllegalWordsSearch wordsSearch;
-  @Autowired private IllegalWordsSearch illegalWordsSearch;
+  @Autowired private ApplicationEventPublisher eventPublisher;
 
   /**
    * 获取QQ信息
@@ -169,6 +171,10 @@ public class CommentServiceImpl implements CommentService {
             .reason(reason)
             .build();
     commentMapper.insert(commentDO);
+
+    // 发送 评论发布事件
+    Long commentId = commentDO.getId();
+    eventPublisher.publishEvent(new PublishCommentEvent(this, commentId));
 
     // 给予前端对应的提示信息
     if (isContainSensitiveWord) {

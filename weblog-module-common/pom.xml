@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-<!--    <groupId>com.slilio</groupId>-->
+    <!--    <groupId>com.slilio</groupId>-->
     <artifactId>weblog-module-common</artifactId>
     <name>weblog-module-common</name>
     <description>weblog-module-common 通用模块</description>
@@ -20,7 +20,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-<!--常用工具库-->
+        <!--常用工具库-->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -33,6 +33,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- 邮件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <!-- AOP 切面 -->
         <dependency>
@@ -75,7 +80,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
     </dependencies>
-
 
 
 </project>
