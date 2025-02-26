@@ -1,6 +1,7 @@
 package com.slilio.weblog.admin.controller;
 
 import com.slilio.weblog.admin.model.vo.comment.DeleteCommentReqVO;
+import com.slilio.weblog.admin.model.vo.comment.ExamineCommentReqVO;
 import com.slilio.weblog.admin.model.vo.comment.FindCommentPageListReqVO;
 import com.slilio.weblog.admin.service.AdminCommentService;
 import com.slilio.weblog.common.aspect.ApiOperationLog;
@@ -33,5 +34,12 @@ public class AdminCommentController {
   @ApiOperationLog(description = "评论删除")
   public Response deleteComment(@RequestBody @Validated DeleteCommentReqVO deleteCommentReqVO) {
     return adminCommentService.deleteComment(deleteCommentReqVO);
+  }
+
+  @PostMapping("/examine")
+  @ApiOperation(value = "评论审核")
+  @ApiOperationLog(description = "评论审核")
+  public Response examine(@RequestBody @Validated ExamineCommentReqVO examineCommentReqVO) {
+    return adminCommentService.examine(examineCommentReqVO);
   }
 }

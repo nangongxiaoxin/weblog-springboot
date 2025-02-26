@@ -1,6 +1,7 @@
 package com.slilio.weblog.admin.service;
 
 import com.slilio.weblog.admin.model.vo.comment.DeleteCommentReqVO;
+import com.slilio.weblog.admin.model.vo.comment.ExamineCommentReqVO;
 import com.slilio.weblog.admin.model.vo.comment.FindCommentPageListReqVO;
 import com.slilio.weblog.common.utils.Response;
 
@@ -20,4 +21,12 @@ public interface AdminCommentService {
    * @return
    */
   Response deleteComment(DeleteCommentReqVO deleteCommentReqVO);
+
+  /**
+   * 评论审核
+   *
+   * @param examineCommentReqVO
+   * @return
+   */
+  Response examine(ExamineCommentReqVO examineCommentReqVO);
 }
