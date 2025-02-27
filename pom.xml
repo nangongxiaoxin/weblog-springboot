@@ -60,6 +60,7 @@
         <commons-io.version>2.11.0</commons-io.version>
         <!--        敏感词-->
         <toolgood-words.version>3.1.0.1</toolgood-words.version>
+        <jackson-core.version>2.16.0</jackson-core.version>
     </properties>
 
     <!--统一依赖管理-->
@@ -226,6 +227,12 @@
                 <groupId>io.github.toolgood</groupId>
                 <artifactId>toolgood-words</artifactId>
                 <version>${toolgood-words.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson-core.version}</version>
             </dependency>
 
         </dependencies>
