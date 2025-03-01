@@ -54,6 +54,7 @@ public class TencentCOSUtil {
             "https://%s.cos.%s.myqcloud.com/%s",
             tencentCOSProperties.getBucketName(), tencentCOSProperties.getRegion(), objectName);
     log.info("==> 上传文件至 TencentCOS 成功，访问路径: {}", url);
+    file.getInputStream().close();
     return url;
   }
 }

@@ -24,7 +24,7 @@ jwt:
   # 秘钥
   secret: 9pmKfM0gD+8KuWMJEovmW6F1KeH4eBFMXA/fCCIWon55uC19yl4oFYdk1RAOCNql8ksHyV5lIQfnZ/Gtkd8agg==
   # token 过期时间（单位：分钟） 24*60
-  tokenExpireTime: 144000
+  tokenExpireTime: 1440
   # token 请求头中的 key 值
   tokenHeaderKey: Authorization
   # token 请求头中的 value 值前缀
@@ -35,12 +35,3 @@ qqinfoapi:
   apiUrl: https://api.nsmao.net/api/qq/query
   apiKey: ALOb8Waza2pHH7doZYmBZvURF8
 
-#=================================================================
-# TencentOSS 对象存储
-#=================================================================
-tencentcos:
-  region: ap-beijing
-  SecretId: ###
-  SecretKey: ###
-  bucketName: ###
-  uploadFolder: webLogImg/

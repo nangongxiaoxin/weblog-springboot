@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.5.200:3306/ARTI?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+    url: jdbc:mysql://1Panel-mysql-7mj4:3306/ARTI?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull
     username: root
-    password: 123456
+    password: 1764759472Tianhuan
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -23,7 +23,27 @@ spring:
       max-request-size: 10MB # 限制整个上传请求的最大大小为 10MB。这包括所有上传文件的大小之和。如果请求总大小超过这个值，将会被拒绝。
 
 #=================================================================
-# Lucene 全文检索
+# Lucene 全文检索 lucene 索引存放的位置./app/weblog/lucene-index /www/weblog/server/app/weblog/lucene-index
 #=================================================================
 lucene:
-  indexDir: /app/weblog/lucene-index # lucene 索引存放的位置
+  indexDir: /app/weblog/lucene-index
+
+
+#=================================================================
+# minio
+#=================================================================
+minio:
+  endpoint: http://192.168.5.200:9000
+  accessKey: bx_slilio
+  secretKey: bx_slilio
+  bucketName: weblog
+
+#=================================================================
+# TencentOSS 对象存储
+#=================================================================
+tencentcos:
+  region: ap-beijing
+  SecretId:
+  SecretKey:
+  bucketName: tianhuan-1252376673
+  uploadFolder: webLogImg/

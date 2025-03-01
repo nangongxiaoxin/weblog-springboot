@@ -38,3 +38,14 @@ minio:
 #=================================================================
 lucene:
   indexDir: F:\\java_workspace\\lucene-index # lucene 索引存放的位置
+
+
+#=================================================================
+# TencentOSS 对象存储
+#=================================================================
+tencentcos:
+  region: ap-beijing
+  SecretId:
+  SecretKey:
+  bucketName: tianhuan-1252376673
+  uploadFolder: webLogImg/
